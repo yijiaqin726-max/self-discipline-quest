@@ -84,6 +84,7 @@ export default function Editor() {
             content={note.content}
             onChange={content => updateNoteContent(note.id, content)}
             textareaRef={textareaRef}
+            noteId={note.id}
           />
         </div>
         <Divider onMouseDown={handleDividerMouseDown} />
