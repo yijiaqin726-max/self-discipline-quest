@@ -2,6 +2,8 @@
 
 一款运行在浏览器中的 Markdown 笔记应用，无需安装，打开即用，数据保存在本地。
 
+**[🚀 在线演示 →](https://yijiaqin726-max.github.io/Qin-Yijia/)**
+
 ---
 
 ## 功能特性
