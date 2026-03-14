@@ -3,6 +3,7 @@ import useStore from '../../store/useStore'
 import EditorPane from './EditorPane'
 import PreviewPane from './PreviewPane'
 import Divider from './Divider'
+import Toolbar from './Toolbar'
 import './Editor.css'
 
 export default function Editor() {
@@ -10,7 +11,9 @@ export default function Editor() {
   const note = notes.find(n => n.id === selectedNoteId)
 
   const [splitPos, setSplitPos] = useState(50)
+  const [fontSize, setFontSize] = useState(15)
   const containerRef = useRef(null)
+  const textareaRef = useRef(null)
   const isDragging = useRef(false)
   const dragStart = useRef({ x: 0, pos: 50 })
 
@@ -65,17 +68,27 @@ export default function Editor() {
         <span className="editor-meta">{wordCount} 字</span>
       </div>
 
+      {/* Formatting toolbar */}
+      <Toolbar
+        textareaRef={textareaRef}
+        content={note.content}
+        onChange={content => updateNoteContent(note.id, content)}
+        fontSize={fontSize}
+        onFontSizeChange={setFontSize}
+      />
+
       {/* Split pane */}
       <div className="editor-split" ref={containerRef}>
         <div className="editor-left" style={{ flex: `0 0 ${splitPos}%` }}>
           <EditorPane
             content={note.content}
             onChange={content => updateNoteContent(note.id, content)}
+            textareaRef={textareaRef}
           />
         </div>
         <Divider onMouseDown={handleDividerMouseDown} />
         <div className="editor-right">
-          <PreviewPane content={note.content} />
+          <PreviewPane content={note.content} fontSize={fontSize} />
         </div>
       </div>
     </div>

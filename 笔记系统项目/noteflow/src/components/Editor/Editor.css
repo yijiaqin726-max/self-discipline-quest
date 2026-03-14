@@ -191,6 +191,14 @@
 }
 .prose img { max-width: 100%; border-radius: var(--radius-md); }
 
+/* Highlight / mark */
+.prose mark {
+  background-color: #fde047;
+  color: #1f2328;
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
 /* Divider */
 .editor-divider {
   width: 6px;
@@ -204,4 +212,26 @@
 .editor-divider:hover,
 .editor-divider:active {
   background: var(--color-accent);
+}
+
+/* PDF / Print styles */
+@media print {
+  body.print-mode * {
+    visibility: hidden;
+  }
+
+  body.print-mode .prose,
+  body.print-mode .prose * {
+    visibility: visible;
+  }
+
+  body.print-mode .prose {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 24px 48px;
+    font-size: inherit;
+    overflow: visible;
+  }
 }

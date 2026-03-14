@@ -1,4 +1,4 @@
-export default function EditorPane({ content, onChange }) {
+export default function EditorPane({ content, onChange, textareaRef }) {
   const handleKeyDown = e => {
     if (e.key === 'Tab') {
       e.preventDefault()
@@ -16,6 +16,7 @@ export default function EditorPane({ content, onChange }) {
     <div className="editor-pane">
       <div className="pane-label">编辑</div>
       <textarea
+        ref={textareaRef}
         className="editor-textarea"
         value={content}
         onChange={e => onChange(e.target.value)}
