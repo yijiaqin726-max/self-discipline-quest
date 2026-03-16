@@ -1,3 +1,56 @@
+<script setup>
+import { ref, onMounted, onUnmounted } from 'vue'
+
+const NAV_ITEMS = [
+  { id: 'section-profile',  icon: '⚔️',  label: '我的主页',   short: '主页'   },
+  { id: 'section-quests',   icon: '📋',  label: '任务看板',   short: '任务'   },
+  { id: 'section-skills',   icon: '✨',  label: '技能熟练度', short: '技能'   },
+  { id: 'section-calendar', icon: '📅',  label: '打卡日历',   short: '日历'   },
+  { id: 'section-timer',    icon: '🍅',  label: '番茄钟',     short: '计时'   },
+]
+
+const activeSection = ref('section-profile')
+let observer = null
+
+function scrollTo(id) {
+  const scroller = document.getElementById('main-scroll')
+  const el = document.getElementById(id)
+  if (el && scroller) {
+    scroller.scrollTo({ top: el.offsetTop, behavior: 'smooth' })
+  }
+}
+
+onMounted(() => {
+  const scroller = document.getElementById('main-scroll')
+  if (!scroller) return
+
+  observer = new IntersectionObserver(
+    (entries) => {
+      const visible = entries
+        .filter(e => e.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)
+      if (visible.length > 0) {
+        activeSection.value = visible[0].target.id
+      }
+    },
+    {
+      root: scroller,
+      rootMargin: '-15% 0px -55% 0px',
+      threshold: [0, 0.1, 0.5]
+    }
+  )
+
+  NAV_ITEMS.forEach(item => {
+    const el = document.getElementById(item.id)
+    if (el) observer.observe(el)
+  })
+})
+
+onUnmounted(() => {
+  if (observer) observer.disconnect()
+})
+</script>
+
 <template>
   <!-- 桌面端侧边栏 -->
   <nav class="sidebar">
@@ -6,54 +59,50 @@
       <span class="logo-text">自律Quest</span>
     </div>
     <ul class="nav-list">
-      <li v-for="route in navRoutes" :key="route.path">
-        <RouterLink :to="route.path" class="nav-item" :class="{ active: currentPath === route.path }">
-          <span class="nav-icon">{{ route.meta.icon }}</span>
-          <span class="nav-label">{{ route.meta.title }}</span>
-        </RouterLink>
+      <li v-for="item in NAV_ITEMS" :key="item.id">
+        <button
+          class="nav-item"
+          :class="{ active: activeSection === item.id }"
+          @click="scrollTo(item.id)"
+        >
+          <span class="nav-icon">{{ item.icon }}</span>
+          <span class="nav-label">{{ item.label }}</span>
+        </button>
       </li>
     </ul>
     <div class="sidebar-footer">
-      <span class="version">v0.1.0</span>
+      <span class="version">v0.4.0</span>
     </div>
   </nav>
 
   <!-- 移动端底部 Tab Bar -->
   <nav class="bottom-bar">
-    <RouterLink
-      v-for="route in navRoutes"
-      :key="route.path"
-      :to="route.path"
+    <button
+      v-for="item in NAV_ITEMS"
+      :key="item.id"
       class="tab-item"
-      :class="{ active: currentPath === route.path }"
+      :class="{ active: activeSection === item.id }"
+      @click="scrollTo(item.id)"
     >
-      <span class="tab-icon">{{ route.meta.icon }}</span>
-      <span class="tab-label">{{ route.meta.shortTitle || route.meta.title }}</span>
-    </RouterLink>
+      <span class="tab-icon">{{ item.icon }}</span>
+      <span class="tab-label">{{ item.short }}</span>
+    </button>
   </nav>
 </template>
 
-<script setup>
-import { computed } from 'vue'
-import { RouterLink, useRoute, useRouter } from 'vue-router'
-
-const route = useRoute()
-const router = useRouter()
-const currentPath = computed(() => route.path)
-const navRoutes = router.getRoutes().filter(r => r.meta?.title)
-</script>
-
 <style scoped>
-/* ── 桌面端侧边栏 ── */
+/* ── 侧边栏 ── */
 .sidebar {
   width: 220px;
-  min-height: 100vh;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  flex-shrink: 0;
   background: var(--color-sidebar);
-  border-right: 1px solid var(--color-border);
+  border-right: 4px solid #000;
   display: flex;
   flex-direction: column;
-  padding: 0;
-  flex-shrink: 0;
+  overflow-y: auto;
 }
 
 .sidebar-logo {
@@ -61,77 +110,77 @@ const navRoutes = router.getRoutes().filter(r => r.meta?.title)
   align-items: center;
   gap: 10px;
   padding: 24px 20px 20px;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 3px solid #000;
 }
 
 .logo-icon { font-size: 1.4rem; }
-
 .logo-text {
   font-family: var(--font-pixel);
-  font-size: 0.6rem;
-  color: var(--color-gold);
-  line-height: 1.4;
-  letter-spacing: 0.05em;
+  font-size: 0.58rem;
+  color: #000;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
 }
 
 .nav-list {
   list-style: none;
-  padding: 16px 0;
-  margin: 0;
+  padding: 12px 0;
   flex: 1;
 }
 
 .nav-item {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-left: 4px solid transparent;
+  padding: 13px 20px;
+  font-family: var(--font-body);
+  font-weight: var(--fw-bold);
+  font-size: 0.88rem;
+  color: var(--color-text-dim);
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 20px;
-  color: var(--color-text-dim);
-  text-decoration: none;
-  transition: all 0.2s ease;
-  border-left: 3px solid transparent;
-  font-size: 0.85rem;
+  transition: background 0.1s, color 0.1s;
 }
-
 .nav-item:hover {
+  background: rgba(0, 0, 0, 0.06);
   color: var(--color-text);
-  background: rgba(255, 255, 255, 0.05);
 }
-
 .nav-item.active {
-  color: var(--color-gold);
-  background: rgba(245, 166, 35, 0.1);
-  border-left-color: var(--color-gold);
+  background: #000;
+  color: #fff;
+  border-left-color: var(--color-yellow);
 }
 
 .nav-icon { font-size: 1.1rem; width: 24px; text-align: center; }
 .nav-label { font-size: 0.88rem; }
 
 .sidebar-footer {
-  padding: 16px 20px;
-  border-top: 1px solid var(--color-border);
+  padding: 14px 20px;
+  border-top: 3px solid #000;
 }
-
 .version {
-  font-size: 0.7rem;
-  color: var(--color-text-dim);
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
   font-family: var(--font-pixel);
 }
 
-/* ── 移动端底部 Tab Bar（默认隐藏，小屏显示）── */
+/* ── 移动端 Tab Bar ── */
 .bottom-bar {
   display: none;
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 60px;
-  background: var(--color-sidebar);
-  border-top: 1px solid var(--color-border);
+  height: 62px;
+  background: #fff;
+  border-top: 3px solid #000;
   z-index: 500;
   justify-content: space-around;
   align-items: stretch;
-  /* 避免 iOS 安全区域被遮挡 */
   padding-bottom: env(safe-area-inset-bottom);
 }
 
@@ -142,32 +191,28 @@ const navRoutes = router.getRoutes().filter(r => r.meta?.title)
   align-items: center;
   justify-content: center;
   gap: 3px;
+  background: none;
+  border: none;
   color: var(--color-text-dim);
-  text-decoration: none;
-  transition: color 0.2s;
+  cursor: pointer;
   padding: 8px 4px;
+  font-family: var(--font-body);
+  transition: background 0.1s;
 }
-
 .tab-item.active {
-  color: var(--color-gold);
+  background: #000;
+  color: #fff;
 }
 
 .tab-icon { font-size: 1.2rem; line-height: 1; }
-
 .tab-label {
   font-size: 0.6rem;
-  line-height: 1;
+  font-weight: var(--fw-bold);
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 52px;
-  text-align: center;
 }
 
-/* 移动端断点 */
 @media (max-width: 700px) {
-  .sidebar { display: none; }
+  .sidebar    { display: none; }
   .bottom-bar { display: flex; }
 }
 </style>
-

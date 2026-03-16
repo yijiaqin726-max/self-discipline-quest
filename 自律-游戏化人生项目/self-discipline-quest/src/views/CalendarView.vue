@@ -5,9 +5,9 @@ import { useCalendarStore } from '../stores/calendarStore'
 const store = useCalendarStore()
 
 // ── 当前浏览月份 ──────────────────────────────────────────
-const today = new Date()
-const viewYear  = ref(today.getFullYear())
-const viewMonth = ref(today.getMonth() + 1) // 1-12
+const today      = new Date()
+const viewYear   = ref(today.getFullYear())
+const viewMonth  = ref(today.getMonth() + 1)
 
 const monthLabel = computed(() => {
   const d = new Date(viewYear.value, viewMonth.value - 1)
@@ -27,26 +27,22 @@ function goToday() {
   viewMonth.value = today.getMonth() + 1
 }
 
-// ── 日历格子计算 ──────────────────────────────────────────
+// ── 日历格 ────────────────────────────────────────────────
 const WEEK_DAYS = ['日', '一', '二', '三', '四', '五', '六']
 
 const calendarCells = computed(() => {
   const year  = viewYear.value
   const month = viewMonth.value
-  const daysInMonth = new Date(year, month, 0).getDate()
-  const firstWeekday = new Date(year, month - 1, 1).getDay() // 0=Sun
-
+  const daysInMonth  = new Date(year, month, 0).getDate()
+  const firstWeekday = new Date(year, month - 1, 1).getDay()
   const cells = []
-  // 前置空格
   for (let i = 0; i < firstWeekday; i++) cells.push(null)
-  // 日期格子
   for (let d = 1; d <= daysInMonth; d++) cells.push(d)
   return cells
 })
 
 const daysInMonth = computed(() => new Date(viewYear.value, viewMonth.value, 0).getDate())
 
-// ── 打卡统计 ──────────────────────────────────────────────
 const checkedDays = computed(() =>
   store.getMonthCheckins(viewYear.value, viewMonth.value).length
 )
@@ -60,10 +56,9 @@ const isChecked = (day) =>
   store.isCheckedIn(viewYear.value, viewMonth.value, day)
 
 // ── 打卡交互 ──────────────────────────────────────────────
-// 确认弹窗
 const confirmVisible = ref(false)
 const confirmDay     = ref(null)
-const confirmAction  = ref('') // 'checkin' | 'cancel'
+const confirmAction  = ref('')
 
 function onDayClick(day) {
   if (!day) return
@@ -80,11 +75,7 @@ function confirmCheckin() {
   if (!wasChecked) spawnParticles(day)
 }
 
-function cancelConfirm() {
-  confirmVisible.value = false
-}
-
-// ── 清空弹窗 ──────────────────────────────────────────────
+// ── 清空 ─────────────────────────────────────────────────
 const clearVisible = ref(false)
 
 function confirmClear() {
@@ -92,18 +83,40 @@ function confirmClear() {
   clearVisible.value = false
 }
 
+// ── 多日历管理 ────────────────────────────────────────────
+const addCalVisible  = ref(false)
+const newCalName     = ref('')
+const newCalColor    = ref('')
+const deleteCalConfirm = ref(false)
+
+function openAddCal() {
+  newCalName.value  = ''
+  newCalColor.value = ''
+  addCalVisible.value = true
+}
+
+function confirmAddCal() {
+  const name = newCalName.value.trim()
+  if (!name) return
+  store.addCalendar(name, newCalColor.value || undefined)
+  addCalVisible.value = false
+}
+
+function confirmDeleteCal() {
+  store.deleteCalendar(store.activeCalendarId)
+  deleteCalConfirm.value = false
+}
+
 // ── 粒子特效 ──────────────────────────────────────────────
 const particles = ref([])
 let particleId = 0
 
 function spawnParticles(day) {
-  // 找到对应 DOM 格子的位置
   const el = document.querySelector(`[data-day="${day}"]`)
   if (!el) return
   const rect = el.getBoundingClientRect()
   const cx = rect.left + rect.width / 2
   const cy = rect.top  + rect.height / 2
-
   const EMOJIS = ['✨', '⭐', '🌟', '💫', '🎉']
   for (let i = 0; i < 8; i++) {
     const id = ++particleId
@@ -112,8 +125,7 @@ function spawnParticles(day) {
     particles.value.push({
       id,
       emoji: EMOJIS[Math.floor(Math.random() * EMOJIS.length)],
-      x: cx,
-      y: cy,
+      x: cx, y: cy,
       dx: Math.cos(angle) * dist,
       dy: Math.sin(angle) * dist
     })
@@ -126,98 +138,109 @@ function spawnParticles(day) {
 
 <template>
   <div class="calendar-page">
+    <div class="section-inner">
 
-    <!-- ── 顶部标题栏 ── -->
-    <div class="page-header">
-      <h1 class="page-title">📅 打卡日历</h1>
-      <button class="btn btn-danger btn-sm" @click="clearVisible = true">🗑 清空本月</button>
-    </div>
+      <!-- ── 标题 ── -->
+      <div class="page-header">
+        <h2 class="section-title">📅 打卡日历</h2>
+        <button class="btn btn-danger btn-sm" @click="clearVisible = true">🗑 清空本月</button>
+      </div>
 
-    <!-- ── 统计栏 ── -->
-    <div class="stats-bar card">
-      <div class="stat-item">
-        <span class="stat-num">{{ checkedDays }}</span>
-        <span class="stat-label">已打卡天数</span>
+      <!-- ── 日历 Tab 切换 ── -->
+      <div class="cal-tabs">
+        <button
+          v-for="cal in store.calendars"
+          :key="cal.id"
+          class="cal-tab"
+          :class="{ active: store.activeCalendarId === cal.id }"
+          :style="{ '--tab-color': cal.color }"
+          @click="store.setActiveCalendar(cal.id)"
+        >{{ cal.name }}</button>
+        <button class="cal-tab cal-tab-add" @click="openAddCal">＋ 新建</button>
+        <button
+          v-if="store.calendars.length > 1"
+          class="cal-tab cal-tab-del"
+          @click="deleteCalConfirm = true"
+        >🗑</button>
       </div>
-      <div class="stat-divider"></div>
-      <div class="stat-item">
-        <span class="stat-num">{{ daysInMonth }}</span>
-        <span class="stat-label">当月总天数</span>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat-item">
-        <span class="stat-num streak">{{ store.currentStreak }}</span>
-        <span class="stat-label">🔥 连续打卡</span>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat-item">
-        <span class="stat-num">{{ daysInMonth > 0 ? Math.round(checkedDays / daysInMonth * 100) : 0 }}%</span>
-        <span class="stat-label">完成率</span>
-      </div>
-    </div>
 
-    <!-- ── 日历主体 ── -->
-    <div class="calendar-card card">
-      <!-- 月份导航 -->
-      <div class="month-nav">
-        <button class="nav-btn" @click="prevMonth">‹</button>
-        <div class="month-center">
-          <span class="month-label">{{ monthLabel }}</span>
-          <button
-            v-if="viewYear !== today.getFullYear() || viewMonth !== today.getMonth()+1"
-            class="today-btn"
-            @click="goToday"
-          >回到今天</button>
+      <!-- ── 统计栏 ── -->
+      <div class="stats-bar">
+        <div class="stat-box">
+          <span class="stat-num">{{ checkedDays }}</span>
+          <span class="stat-label">已打卡</span>
         </div>
-        <button class="nav-btn" @click="nextMonth">›</button>
-      </div>
-
-      <!-- 星期表头 -->
-      <div class="week-header">
-        <div
-          v-for="w in WEEK_DAYS"
-          :key="w"
-          class="week-day"
-          :class="{ weekend: w === '日' || w === '六' }"
-        >{{ w }}</div>
-      </div>
-
-      <!-- 日期格子 -->
-      <div class="days-grid">
-        <div
-          v-for="(day, idx) in calendarCells"
-          :key="idx"
-          class="day-cell"
-          :class="{
-            empty: !day,
-            checked: day && isChecked(day),
-            today: day && isToday(day),
-            future: day && !isToday(day) && new Date(viewYear, viewMonth-1, day) > today
-          }"
-          :data-day="day"
-          @click="onDayClick(day)"
-        >
-          <template v-if="day">
-            <span class="day-num">{{ day }}</span>
-            <span v-if="isChecked(day)" class="check-mark">✓</span>
-          </template>
+        <div class="stat-box">
+          <span class="stat-num">{{ daysInMonth }}</span>
+          <span class="stat-label">当月天数</span>
+        </div>
+        <div class="stat-box stat-streak">
+          <span class="stat-num">{{ store.currentStreak }}</span>
+          <span class="stat-label">🔥 连续打卡</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">{{ daysInMonth > 0 ? Math.round(checkedDays / daysInMonth * 100) : 0 }}%</span>
+          <span class="stat-label">完成率</span>
         </div>
       </div>
+
+      <!-- ── 日历主体 ── -->
+      <div class="calendar-card card">
+        <!-- 月份导航 -->
+        <div class="month-nav">
+          <button class="nav-btn" @click="prevMonth">‹</button>
+          <div class="month-center">
+            <span class="month-label">{{ monthLabel }}</span>
+            <button
+              v-if="viewYear !== today.getFullYear() || viewMonth !== today.getMonth()+1"
+              class="today-btn"
+              @click="goToday"
+            >回到今天</button>
+          </div>
+          <button class="nav-btn" @click="nextMonth">›</button>
+        </div>
+
+        <!-- 星期表头 -->
+        <div class="week-header">
+          <div v-for="w in WEEK_DAYS" :key="w" class="week-day" :class="{ weekend: w==='日'||w==='六' }">{{ w }}</div>
+        </div>
+
+        <!-- 日期格子 -->
+        <div class="days-grid">
+          <div
+            v-for="(day, idx) in calendarCells"
+            :key="idx"
+            class="day-cell"
+            :class="{
+              empty:   !day,
+              checked: day && isChecked(day),
+              today:   day && isToday(day),
+              future:  day && !isToday(day) && new Date(viewYear, viewMonth-1, day) > today
+            }"
+            :data-day="day"
+            @click="onDayClick(day)"
+          >
+            <template v-if="day">
+              <span class="day-num">{{ day }}</span>
+              <span v-if="isChecked(day)" class="check-mark">✓</span>
+            </template>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- ── 打卡确认弹窗 ── -->
     <Transition name="modal">
-      <div v-if="confirmVisible" class="modal-overlay" @click.self="cancelConfirm">
+      <div v-if="confirmVisible" class="modal-overlay" @click.self="confirmVisible = false">
         <div class="modal-box">
           <div class="modal-icon">{{ confirmAction === 'checkin' ? '✅' : '↩️' }}</div>
           <h3 class="modal-title">
-            {{ confirmAction === 'checkin' ? `${viewMonth}月${confirmDay}日 打卡成功？` : `取消 ${viewMonth}月${confirmDay}日 的打卡？` }}
+            {{ confirmAction === 'checkin' ? `${viewMonth}月${confirmDay}日 打卡！` : `取消 ${viewMonth}月${confirmDay}日？` }}
           </h3>
-          <p class="modal-desc">
-            {{ confirmAction === 'checkin' ? '今日又迈出了一步，坚持就是胜利！' : '确认取消这天的打卡记录' }}
-          </p>
+          <p class="modal-desc">{{ confirmAction === 'checkin' ? '坚持就是胜利！' : '确认取消这天的打卡' }}</p>
           <div class="modal-actions">
-            <button class="btn btn-ghost" @click="cancelConfirm">取消</button>
+            <button class="btn btn-ghost" @click="confirmVisible = false">取消</button>
             <button class="btn btn-primary" @click="confirmCheckin">确认</button>
           </div>
         </div>
@@ -229,11 +252,56 @@ function spawnParticles(day) {
       <div v-if="clearVisible" class="modal-overlay" @click.self="clearVisible = false">
         <div class="modal-box">
           <div class="modal-icon">⚠️</div>
-          <h3 class="modal-title">清空 {{ monthLabel }} 的打卡记录？</h3>
-          <p class="modal-desc">此操作不可恢复，本月 {{ checkedDays }} 条打卡记录将全部删除。</p>
+          <h3 class="modal-title">清空 {{ monthLabel }}？</h3>
+          <p class="modal-desc">{{ checkedDays }} 条打卡记录将全部删除，不可恢复。</p>
           <div class="modal-actions">
             <button class="btn btn-ghost" @click="clearVisible = false">取消</button>
             <button class="btn btn-danger" @click="confirmClear">确认清空</button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- ── 新建日历弹窗 ── -->
+    <Transition name="modal">
+      <div v-if="addCalVisible" class="modal-overlay" @click.self="addCalVisible = false">
+        <div class="modal-box">
+          <h3 class="modal-title">新建日历</h3>
+          <div class="form-group">
+            <label class="form-label">日历名称</label>
+            <input v-model="newCalName" class="form-input" placeholder="例如：健身打卡、学习计划..." maxlength="20" autofocus @keydown.enter="confirmAddCal" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">颜色</label>
+            <div class="color-picker">
+              <button
+                v-for="c in store.PALETTE"
+                :key="c"
+                class="color-dot"
+                :style="{ background: c }"
+                :class="{ selected: newCalColor === c }"
+                @click="newCalColor = c"
+              ></button>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="btn btn-ghost" @click="addCalVisible = false">取消</button>
+            <button class="btn btn-primary" @click="confirmAddCal">创建</button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- ── 删除日历确认 ── -->
+    <Transition name="modal">
+      <div v-if="deleteCalConfirm" class="modal-overlay" @click.self="deleteCalConfirm = false">
+        <div class="modal-box">
+          <div class="modal-icon">🗑️</div>
+          <h3 class="modal-title">删除「{{ store.activeCalendar?.name }}」？</h3>
+          <p class="modal-desc">该日历所有打卡记录将被永久删除。</p>
+          <div class="modal-actions">
+            <button class="btn btn-ghost" @click="deleteCalConfirm = false">取消</button>
+            <button class="btn btn-danger" @click="confirmDeleteCal">确认删除</button>
           </div>
         </div>
       </div>
@@ -245,21 +313,16 @@ function spawnParticles(day) {
         v-for="p in particles"
         :key="p.id"
         class="particle"
-        :style="{
-          left: p.x + 'px',
-          top:  p.y + 'px',
-          '--dx': p.dx + 'px',
-          '--dy': p.dy + 'px'
-        }"
+        :style="{ left: p.x+'px', top: p.y+'px', '--dx': p.dx+'px', '--dy': p.dy+'px' }"
       >{{ p.emoji }}</span>
     </div>
-
   </div>
 </template>
 
 <style scoped>
-.calendar-page {
-  padding: 32px;
+.calendar-page { width: 100%; }
+
+.section-inner {
   max-width: 820px;
   display: flex;
   flex-direction: column;
@@ -272,52 +335,88 @@ function spawnParticles(day) {
   align-items: center;
   justify-content: space-between;
 }
-.page-title {
-  font-family: var(--font-pixel);
-  font-size: 0.72rem;
-  color: var(--color-gold);
-  letter-spacing: 0.1em;
+
+/* ── 日历 Tabs ── */
+.cal-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.cal-tab {
+  padding: 8px 16px;
+  border: 3px solid #000;
+  border-radius: 10px;
+  background: #fff;
+  font-family: var(--font-body);
+  font-weight: var(--fw-bold);
+  font-size: 0.85rem;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #000;
+  transition: box-shadow 0.07s, transform 0.07s;
+}
+.cal-tab:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 #000;
+}
+.cal-tab.active {
+  background: var(--tab-color, #4DFFA0);
+  box-shadow: 1px 1px 0 #000;
+  transform: translate(2px, 2px);
+}
+.cal-tab-add {
+  border-style: dashed;
+  background: rgba(255,255,255,0.6);
+  box-shadow: none;
+}
+.cal-tab-add:hover {
+  background: #fff;
+  box-shadow: 2px 2px 0 #000;
+  transform: translate(1px, 1px);
+}
+.cal-tab-del {
+  background: var(--color-pink);
+  padding: 8px 12px;
 }
 
 /* ── 统计栏 ── */
 .stats-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding: 16px 24px;
-  gap: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
 }
-.stat-item {
+
+.stat-box {
+  background: #fff;
+  border: 3px solid #000;
+  border-radius: var(--radius);
+  padding: 14px 12px;
+  text-align: center;
+  box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 4px;
 }
+
 .stat-num {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--color-gold);
+  font-size: 1.8rem;
+  font-weight: var(--fw-black);
+  color: #000;
   line-height: 1;
 }
-.stat-num.streak {
-  color: #ff7043;
-}
+
+.stat-streak .stat-num { color: #e05c00; }
+
 .stat-label {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
+  font-weight: var(--fw-bold);
   color: var(--color-text-dim);
-}
-.stat-divider {
-  width: 1px;
-  height: 36px;
-  background: var(--color-border);
 }
 
 /* ── 日历卡片 ── */
-.calendar-card {
-  padding: 24px;
-}
+.calendar-card { padding: 24px; }
 
-/* 月份导航 */
 .month-nav {
   display: flex;
   align-items: center;
@@ -331,40 +430,37 @@ function spawnParticles(day) {
 }
 .month-label {
   font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-text);
+  font-weight: var(--fw-black);
+  color: #000;
 }
 .nav-btn {
-  background: none;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  color: var(--color-text-dim);
+  background: #fff;
+  border: 3px solid #000;
+  border-radius: 8px;
   font-size: 1.2rem;
-  width: 34px;
-  height: 34px;
+  width: 36px; height: 36px;
   cursor: pointer;
+  box-shadow: var(--shadow-btn);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: box-shadow 0.07s, transform 0.07s;
 }
-.nav-btn:hover {
-  border-color: var(--color-gold-dim);
-  color: var(--color-gold);
-}
+.nav-btn:hover { transform: translate(1px,1px); box-shadow: 2px 2px 0 #000; }
+.nav-btn:active { transform: translate(3px,3px); box-shadow: none; }
+
 .today-btn {
   font-size: 0.75rem;
-  padding: 3px 10px;
+  padding: 4px 12px;
   border-radius: 20px;
-  background: rgba(245,166,35,0.1);
-  border: 1px solid var(--color-gold-dim);
-  color: var(--color-gold);
+  background: #000;
+  color: #fff;
+  border: none;
   cursor: pointer;
-  transition: background 0.2s;
+  font-weight: var(--fw-bold);
+  transition: opacity 0.15s;
 }
-.today-btn:hover {
-  background: rgba(245,166,35,0.2);
-}
+.today-btn:hover { opacity: 0.8; }
 
 /* 星期表头 */
 .week-header {
@@ -375,12 +471,11 @@ function spawnParticles(day) {
 .week-day {
   text-align: center;
   font-size: 0.78rem;
+  font-weight: var(--fw-bold);
   color: var(--color-text-dim);
   padding: 6px 0;
 }
-.week-day.weekend {
-  color: var(--color-red);
-}
+.week-day.weekend { color: var(--color-red); }
 
 /* 日期格子 */
 .days-grid {
@@ -395,172 +490,94 @@ function spawnParticles(day) {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius);
-  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  border: 2px solid #000;
   cursor: pointer;
-  position: relative;
-  transition: all 0.2s ease;
-  background: var(--color-bg);
+  background: #fff;
   gap: 2px;
+  transition: transform 0.07s, box-shadow 0.07s;
 }
-
 .day-cell.empty {
   border-color: transparent;
-  cursor: default;
   background: transparent;
-}
-
-.day-cell:not(.empty):hover {
-  border-color: var(--color-gold-dim);
-  background: rgba(245,166,35,0.06);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(245,166,35,0.1);
-}
-
-.day-cell.today {
-  border-color: var(--color-gold);
-  box-shadow: 0 0 0 1px var(--color-gold-dim);
-}
-
-.day-cell.future {
-  opacity: 0.4;
   cursor: default;
 }
-.day-cell.future:hover {
-  transform: none;
-  box-shadow: none;
-  border-color: var(--color-border);
-  background: var(--color-bg);
+.day-cell:not(.empty):not(.future):hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 #000;
 }
-
-/* 已打卡格子 */
+.day-cell.future {
+  opacity: 0.35;
+  cursor: default;
+}
+.day-cell.today {
+  background: var(--color-yellow);
+  border: 3px solid #000;
+  box-shadow: 2px 2px 0 #000;
+}
 .day-cell.checked {
-  background: rgba(57, 217, 138, 0.12);
-  border-color: var(--color-green);
-  box-shadow: 0 0 10px var(--color-green-glow);
-  animation: checkedPulse 0.4s ease;
+  background: var(--color-mint);
+  border: 3px solid #000;
+  box-shadow: 2px 2px 0 #000;
+  animation: cellPop 0.3s ease;
 }
-
-@keyframes checkedPulse {
+@keyframes cellPop {
   0%   { transform: scale(1); }
-  50%  { transform: scale(1.08); }
+  50%  { transform: scale(1.1); }
   100% { transform: scale(1); }
-}
-
-.day-cell.checked:hover {
-  background: rgba(57, 217, 138, 0.2);
-  box-shadow: 0 0 16px var(--color-green-glow);
-  transform: translateY(-1px);
 }
 
 .day-num {
   font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--color-text);
+  font-weight: var(--fw-bold);
+  color: #000;
   line-height: 1;
 }
-.day-cell.checked .day-num {
-  color: var(--color-green);
-}
-.day-cell.today .day-num {
-  color: var(--color-gold);
-  font-weight: 700;
-}
-
 .check-mark {
-  font-size: 0.7rem;
-  color: var(--color-green);
-  font-weight: 700;
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: #000;
   line-height: 1;
 }
 
-/* ── 弹窗 ── */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
+/* ── 表单 ── */
+.form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+.form-label { font-size: 0.82rem; font-weight: var(--fw-bold); color: var(--color-text-dim); }
+.form-input { width: 100%; }
+
+.color-picker {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  backdrop-filter: blur(4px);
+  gap: 10px;
 }
-
-.modal-box {
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: 32px;
-  max-width: 360px;
-  width: 90%;
-  text-align: center;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+.color-dot {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: transform 0.1s, border-color 0.1s;
+  box-shadow: 2px 2px 0 #000;
 }
-
-.modal-icon {
-  font-size: 2.5rem;
-  margin-bottom: 12px;
-}
-
-.modal-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-text);
-  margin-bottom: 8px;
-}
-
-.modal-desc {
-  font-size: 0.85rem;
-  color: var(--color-text-dim);
-  margin-bottom: 24px;
-  line-height: 1.6;
-}
-
-.modal-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-}
-
-/* 弹窗过渡 */
-.modal-enter-active,
-.modal-leave-active {
-  transition: all 0.2s ease;
-}
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-  transform: scale(0.92);
-}
+.color-dot:hover { transform: scale(1.15); }
+.color-dot.selected { border-color: #000; transform: scale(1.15); }
 
 /* ── 粒子层 ── */
-.particles-layer {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9999;
-}
-
+.particles-layer { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
 .particle {
   position: absolute;
   font-size: 1.1rem;
   transform: translate(-50%, -50%);
   animation: particleFly 0.9s ease-out forwards;
 }
-
 @keyframes particleFly {
-  0%   { opacity: 1; transform: translate(-50%, -50%) translate(0, 0) scale(1); }
-  100% { opacity: 0; transform: translate(-50%, -50%) translate(var(--dx), var(--dy)) scale(0.4); }
+  0%   { opacity: 1; transform: translate(-50%,-50%) translate(0,0) scale(1); }
+  100% { opacity: 0; transform: translate(-50%,-50%) translate(var(--dx),var(--dy)) scale(0.4); }
 }
 
 /* ── 响应式 ── */
 @media (max-width: 600px) {
-  .calendar-page { padding: 16px; gap: 14px; }
-  .stats-bar { padding: 12px; gap: 0; }
-  .stat-num { font-size: 1.2rem; }
-  .day-cell { border-radius: 4px; }
+  .stats-bar { grid-template-columns: repeat(2, 1fr); }
   .day-num { font-size: 0.75rem; }
-  .check-mark { font-size: 0.6rem; }
+  .check-mark { font-size: 0.55rem; }
   .days-grid { gap: 4px; }
 }
 </style>
