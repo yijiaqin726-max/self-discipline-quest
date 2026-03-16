@@ -2,7 +2,7 @@
 
 > 把自律变成一场 RPG 冒险，用经验值、技能熟练度和成就奖励激励自己持续成长。
 
-**[🚀 在线 Demo](https://your-username.github.io/self-discipline-quest/)**
+**[🚀 在线 Demo](https://yijiaqin726-max.github.io/Qin-Yijia/self-discipline-quest/)**
 
 ---
 
