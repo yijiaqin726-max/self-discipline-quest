@@ -1,10 +1,11 @@
-name: Deploy NoteFlow to GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [main]
     paths:
       - '笔记系统项目/noteflow/**'
+      - '自律-游戏化人生项目/self-discipline-quest/**'
   workflow_dispatch:
 
 permissions:
@@ -22,25 +23,50 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      # ── Build NoteFlow ──────────────────────────────────
+      - name: Setup Node (noteflow)
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
           cache-dependency-path: 笔记系统项目/noteflow/package-lock.json
 
-      - name: Install dependencies
+      - name: Install dependencies (noteflow)
         working-directory: 笔记系统项目/noteflow
         run: npm ci
 
-      - name: Build
+      - name: Build (noteflow)
         working-directory: 笔记系统项目/noteflow
         run: npm run build
+
+      # ── Build Self-Discipline-Quest ─────────────────────
+      - name: Setup Node (self-discipline-quest)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: 自律-游戏化人生项目/self-discipline-quest/package-lock.json
+
+      - name: Install dependencies (self-discipline-quest)
+        working-directory: 自律-游戏化人生项目/self-discipline-quest
+        run: npm ci
+
+      - name: Build (self-discipline-quest)
+        working-directory: 自律-游戏化人生项目/self-discipline-quest
+        run: npm run build
+
+      # ── Merge dist folders ──────────────────────────────
+      - name: Merge dist
+        run: |
+          mkdir -p merged
+          cp -r 笔记系统项目/noteflow/dist/. merged/
+          mkdir -p merged/self-discipline-quest
+          cp -r 自律-游戏化人生项目/self-discipline-quest/dist/. merged/self-discipline-quest/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 笔记系统项目/noteflow/dist
+          path: merged
 
   deploy:
     needs: build
