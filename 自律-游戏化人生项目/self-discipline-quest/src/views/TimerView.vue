@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onUnmounted } from 'vue'
-import { Settings } from 'lucide-vue-next'
+import { Settings, Target } from 'lucide-vue-next'
 import { useQuestStore } from '../stores/questStore'
 import { useSkillStore } from '../stores/skillStore'
 import { useStorage } from '../composables/useStorage'
@@ -9,8 +9,8 @@ import WeeklyChart from '../components/common/WeeklyChart.vue'
 const questStore = useQuestStore()
 const skillStore = useSkillStore()
 
-// ── 今日番茄计数 ──────────────────────────────────────────
-const todayKey = new Date().toISOString().slice(0, 10)
+// ── 今日番茄计数 ──────────────────────────────────────────────────────────
+const todayKey  = new Date().toISOString().slice(0, 10)
 const tomatoLog = useStorage('sq_tomatoes', {})
 
 const todayCount = computed(() => tomatoLog.value[todayKey] ?? 0)
@@ -20,75 +20,70 @@ function recordTomato() {
   tomatoLog.value[todayKey]++
 }
 
-// ── 计时器设置 ────────────────────────────────────────────
-const focusMinutes  = ref(25)
-const breakMinutes  = ref(5)
-const settingsOpen  = ref(false)
-const tempFocus     = ref(25)
-const tempBreak     = ref(5)
+// ── 计时器设置 ────────────────────────────────────────────────────────────
+const focusMinutes = ref(25)
+const breakMinutes = ref(5)
+const settingsOpen = ref(false)
+const tempFocus    = ref(25)
+const tempBreak    = ref(5)
 
 function openSettings() {
   tempFocus.value = focusMinutes.value
   tempBreak.value = breakMinutes.value
   settingsOpen.value = true
 }
-
 function saveSettings() {
   focusMinutes.value = Math.max(1, Math.min(60, tempFocus.value))
   breakMinutes.value = Math.max(1, Math.min(30, tempBreak.value))
   if (phase.value === 'idle') {
-    totalSecs.value = focusMinutes.value * 60
-    remaining.value = totalSecs.value
+    totalSecs.value   = focusMinutes.value * 60
+    remaining.value   = totalSecs.value
   }
   settingsOpen.value = false
 }
 
-// ── 计时器核心 ────────────────────────────────────────────
-const phase      = ref('idle')
-const running    = ref(false)
-const remaining  = ref(25 * 60)
-const totalSecs  = ref(25 * 60)
+// ── 计时器核心 ────────────────────────────────────────────────────────────
+const phase     = ref('idle')
+const running   = ref(false)
+const remaining = ref(25 * 60)
+const totalSecs = ref(25 * 60)
 let   intervalId = null
 
-const minutes = computed(() => Math.floor(remaining.value / 60).toString().padStart(2, '0'))
-const seconds = computed(() => (remaining.value % 60).toString().padStart(2, '0'))
+const minutes  = computed(() => Math.floor(remaining.value / 60).toString().padStart(2, '0'))
+const seconds  = computed(() => (remaining.value % 60).toString().padStart(2, '0'))
 const progress = computed(() => {
   if (totalSecs.value === 0) return 0
   return 1 - remaining.value / totalSecs.value
 })
 
-const RADIUS = 66
+const RADIUS        = 66
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 const strokeDashoffset = computed(() => CIRCUMFERENCE * (1 - progress.value))
 
 function start() {
   if (phase.value === 'idle') {
-    phase.value = 'focus'
+    phase.value     = 'focus'
     remaining.value = focusMinutes.value * 60
-    totalSecs.value  = focusMinutes.value * 60
+    totalSecs.value = focusMinutes.value * 60
   }
   running.value = true
-  intervalId = setInterval(tick, 1000)
+  intervalId    = setInterval(tick, 1000)
 }
-
 function pause() {
   running.value = false
   clearInterval(intervalId)
   intervalId = null
 }
-
 function reset() {
   pause()
-  phase.value = 'idle'
+  phase.value     = 'idle'
   remaining.value = focusMinutes.value * 60
-  totalSecs.value  = focusMinutes.value * 60
+  totalSecs.value = focusMinutes.value * 60
 }
-
 function tick() {
   if (remaining.value <= 0) { onPhaseEnd(); return }
   remaining.value--
 }
-
 function onPhaseEnd() {
   pause()
   if (phase.value === 'focus') {
@@ -97,35 +92,33 @@ function onPhaseEnd() {
     showCompleteModal.value = true
   } else if (phase.value === 'break') {
     requestNotification('⏰ 休息结束', '准备好开始下一个番茄了吗？')
-    phase.value = 'idle'
+    phase.value     = 'idle'
     remaining.value = focusMinutes.value * 60
-    totalSecs.value  = focusMinutes.value * 60
+    totalSecs.value = focusMinutes.value * 60
   }
 }
-
 function startBreak() {
   showCompleteModal.value = false
-  phase.value = 'break'
+  phase.value     = 'break'
   remaining.value = breakMinutes.value * 60
-  totalSecs.value  = breakMinutes.value * 60
+  totalSecs.value = breakMinutes.value * 60
   start()
 }
-
 function skipBreak() {
   showCompleteModal.value = false
-  phase.value = 'idle'
+  phase.value     = 'idle'
   remaining.value = focusMinutes.value * 60
-  totalSecs.value  = focusMinutes.value * 60
+  totalSecs.value = focusMinutes.value * 60
 }
 
-// ── 浏览器通知 ────────────────────────────────────────────
+// ── 浏览器通知 ────────────────────────────────────────────────────────────
 async function requestNotification(title, body) {
   if (!('Notification' in window)) return
   if (Notification.permission === 'default') await Notification.requestPermission()
   if (Notification.permission === 'granted') new Notification(title, { body, icon: '🍅' })
 }
 
-// ── 完成弹窗 ──────────────────────────────────────────────
+// ── 完成弹窗 ──────────────────────────────────────────────────────────────
 const showCompleteModal = ref(false)
 const selectedQuestId   = ref(null)
 const milestonePopup    = ref(null)
@@ -140,7 +133,7 @@ function linkAndClose() {
       const milestone = questStore.completeQuest(selectedQuestId.value)
       spawnXpFloat(quest.xp)
       if (milestone) {
-        rewardInput.value = skillStore.getReward(milestone.skillId, milestone.milestone)
+        rewardInput.value    = skillStore.getReward(milestone.skillId, milestone.milestone)
         milestonePopup.value = milestone
       }
     }
@@ -148,13 +141,11 @@ function linkAndClose() {
   showCompleteModal.value = false
   startBreak()
 }
-
 function spawnXpFloat(xp) {
   const id = ++xpFloatId
   xpFloats.value.push({ id, text: `+${xp} XP`, x: window.innerWidth / 2, y: window.innerHeight / 2 - 60 })
   setTimeout(() => { xpFloats.value = xpFloats.value.filter(f => f.id !== id) }, 1200)
 }
-
 function saveMilestoneReward() {
   if (!milestonePopup.value) return
   const text = rewardInput.value.trim()
@@ -164,23 +155,28 @@ function saveMilestoneReward() {
 
 onUnmounted(() => { clearInterval(intervalId) })
 
-// ── 阶段样式 ──────────────────────────────────────────────
+// ── 阶段样式 ──────────────────────────────────────────────────────────────
 const phaseArcColor = computed(() => {
   if (phase.value === 'break') return '#4DFFA0'
   if (phase.value === 'focus') return '#FF8C3D'
   return '#FFE03D'
 })
-
 const phaseLabel = computed(() => {
   if (phase.value === 'focus') return '🍅 专注中'
   if (phase.value === 'break') return '☕ 休息中'
   return '准备开始'
 })
-
 const phaseLabelClass = computed(() => {
   if (phase.value === 'focus') return 'chip-orange'
   if (phase.value === 'break') return 'chip-mint'
   return 'chip-yellow'
+})
+
+// ── 当前专注任务 ──────────────────────────────────────────────────────────
+const focusQuest = computed(() => questStore.currentFocusQuest)
+const focusSkill = computed(() => {
+  if (!focusQuest.value?.skillId) return null
+  return skillStore.getSkill(focusQuest.value.skillId)
 })
 </script>
 
@@ -190,6 +186,24 @@ const phaseLabelClass = computed(() => {
     <div class="card-header">
       <h3 class="card-title">番茄钟</h3>
       <button class="settings-btn" @click="openSettings"><Settings :size="15" /></button>
+    </div>
+
+    <!-- 当前专注任务 -->
+    <div v-if="focusQuest" class="focus-task-panel">
+      <div class="focus-task-header">
+        <Target :size="13" class="ft-icon" />
+        <span class="ft-label">当前专注任务</span>
+      </div>
+      <div class="focus-task-name">{{ focusQuest.name }}</div>
+      <div class="focus-task-meta">
+        <span v-if="focusSkill" class="ft-chip ft-skill">{{ focusSkill.icon }} {{ focusSkill.name }}</span>
+        <span class="ft-chip ft-xp">+{{ focusQuest.xp }} XP</span>
+        <span v-if="focusQuest.estimatedPomodoros" class="ft-chip ft-pomo">🍅 ×{{ focusQuest.estimatedPomodoros }}</span>
+      </div>
+    </div>
+    <div v-else class="focus-task-empty">
+      <Target :size="13" class="ft-icon-dim" />
+      <span>去任务中心选择一个任务开始专注</span>
     </div>
 
     <!-- 阶段标签 -->
@@ -282,7 +296,7 @@ const phaseLabelClass = computed(() => {
             </option>
           </select>
         </div>
-        <p v-else class="no-quest-hint">还没有任务，先去「任务看板」创建吧</p>
+        <p v-else class="no-quest-hint">还没有任务，先去「任务中心」创建吧</p>
         <div class="modal-actions">
           <button class="btn btn-ghost" @click="skipBreak">跳过休息</button>
           <button class="btn btn-primary" @click="linkAndClose">
@@ -317,14 +331,10 @@ const phaseLabelClass = computed(() => {
 </template>
 
 <style scoped>
-.timer-page { display: flex; flex-direction: column; gap: 16px; }
+.timer-page { display: flex; flex-direction: column; gap: 14px; }
 
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.card-title { font-size: 0.8rem; font-weight: var(--fw-black); color: var(--color-text-dim); text-transform: uppercase; letter-spacing: 0.06em; }
+.card-header { display: flex; align-items: center; justify-content: space-between; }
+.card-title  { font-size: 0.8rem; font-weight: var(--fw-black); color: var(--color-text-dim); text-transform: uppercase; letter-spacing: 0.06em; }
 
 .settings-btn {
   background: #fff; border: 2px solid #000; border-radius: 8px;
@@ -336,22 +346,51 @@ const phaseLabelClass = computed(() => {
 }
 .settings-btn:hover { transform: translate(1px,1px); box-shadow: 1px 1px 0 #000; }
 
-.timer-body {
+/* 当前专注任务面板 */
+.focus-task-panel {
+  padding: 10px 12px;
+  background: #fff8e1;
+  border: 2px solid #000;
+  border-left: 4px solid var(--color-orange);
+  border-radius: var(--radius);
+  box-shadow: 2px 2px 0 #000;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 16px;
+  gap: 5px;
 }
+.focus-task-header {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 0.65rem; font-weight: var(--fw-black);
+  color: var(--color-text-dim); text-transform: uppercase; letter-spacing: 0.05em;
+}
+.ft-icon { color: var(--color-orange); }
+.focus-task-name  { font-size: 0.88rem; font-weight: var(--fw-black); color: #000; line-height: 1.3; }
+.focus-task-meta  { display: flex; gap: 5px; flex-wrap: wrap; }
+.ft-chip {
+  padding: 2px 7px; border-radius: 10px; border: 2px solid #000;
+  font-size: 0.65rem; font-weight: var(--fw-bold); white-space: nowrap;
+}
+.ft-skill { background: var(--color-sky); }
+.ft-xp    { background: var(--color-yellow); }
+.ft-pomo  { background: #fff0e8; }
+
+.focus-task-empty {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 12px;
+  background: #fafafa;
+  border: 2px solid #e8e8e8; border-radius: var(--radius);
+  font-size: 0.75rem; color: var(--color-text-muted); font-weight: 600;
+}
+.ft-icon-dim { color: #ccc; }
 
 /* 阶段 chip */
+.timer-body {
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
 .phase-chip {
-  display: inline-flex;
-  align-items: center;
-  padding: 5px 14px;
-  border-radius: 20px;
-  border: 2px solid #000;
-  font-size: 0.78rem;
-  font-weight: var(--fw-black);
+  display: inline-flex; align-items: center;
+  padding: 5px 14px; border-radius: 20px;
+  border: 2px solid #000; font-size: 0.78rem; font-weight: var(--fw-black);
   box-shadow: 2px 2px 0 #000;
 }
 .chip-orange { background: var(--color-orange); }
@@ -360,91 +399,68 @@ const phaseLabelClass = computed(() => {
 
 /* 圆形进度条 */
 .circle-wrap { position: relative; width: 180px; height: 180px; }
-.circle-svg { width: 100%; height: 100%; }
-
+.circle-svg  { width: 100%; height: 100%; }
 .time-display {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 4px;
 }
 .time-text {
-  font-family: var(--font-body);
-  font-size: 2.6rem;
-  font-weight: var(--fw-black);
-  color: #000;
-  letter-spacing: 0.01em;
-  line-height: 1;
+  font-family: var(--font-body); font-size: 2.6rem;
+  font-weight: var(--fw-black); color: #000;
+  letter-spacing: 0.01em; line-height: 1;
 }
 .time-sub { font-size: 0.72rem; font-weight: var(--fw-bold); color: var(--color-text-dim); }
 
 /* 控制按钮 */
 .controls { display: flex; align-items: center; gap: 10px; }
-
 .btn-start {
   background: var(--color-orange); color: #000;
   border: 3px solid #000; border-radius: var(--radius);
-  box-shadow: var(--shadow-btn);
-  font-family: var(--font-body); font-weight: var(--fw-black);
-  font-size: 0.9rem; padding: 10px 28px;
+  box-shadow: var(--shadow-btn); font-family: var(--font-body);
+  font-weight: var(--fw-black); font-size: 0.9rem; padding: 10px 28px;
   cursor: pointer; transition: transform 0.07s, box-shadow 0.07s;
 }
-.btn-start:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 #000; }
+.btn-start:hover  { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 #000; }
 .btn-start:active { transform: translate(3px,3px); box-shadow: none; }
-
 .btn-pause {
   background: var(--color-sky); color: #000;
   border: 3px solid #000; border-radius: var(--radius);
-  box-shadow: var(--shadow-btn);
-  font-family: var(--font-body); font-weight: var(--fw-black);
-  font-size: 0.9rem; padding: 10px 28px;
+  box-shadow: var(--shadow-btn); font-family: var(--font-body);
+  font-weight: var(--fw-black); font-size: 0.9rem; padding: 10px 28px;
   cursor: pointer; transition: transform 0.07s, box-shadow 0.07s;
 }
-.btn-pause:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 #000; }
+.btn-pause:hover  { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 #000; }
 .btn-pause:active { transform: translate(3px,3px); box-shadow: none; }
 
 /* 今日统计 */
-.today-stat {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--color-text-dim);
-}
+.today-stat { font-size: 0.8rem; font-weight: 600; color: var(--color-text-dim); }
 .today-stat strong { color: #000; font-weight: var(--fw-black); }
 
 /* 图表区 */
 .chart-section {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding-top: 12px;
-  border-top: 2px solid #e8e8e8;
+  display: flex; flex-direction: column; gap: 8px;
+  padding-top: 12px; border-top: 2px solid #e8e8e8;
 }
 .chart-title {
-  font-size: 0.72rem;
-  font-weight: var(--fw-black);
-  color: var(--color-text-dim);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-size: 0.72rem; font-weight: var(--fw-black);
+  color: var(--color-text-dim); text-transform: uppercase; letter-spacing: 0.05em;
 }
 
 /* 表单 */
 .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
 .form-label { font-size: 0.82rem; font-weight: var(--fw-bold); color: var(--color-text-dim); }
 .form-input { width: 100%; }
-.form-row { display: flex; gap: 12px; }
-.flex1 { flex: 1; }
+.form-row   { display: flex; gap: 12px; }
+.flex1      { flex: 1; }
 .no-quest-hint { font-size: 0.82rem; color: var(--color-text-dim); font-weight: 600; margin-bottom: 16px; text-align: center; }
 
-/* 完成弹窗 */
 .complete-icon { font-size: 2.5rem; text-align: center; }
 .milestone-box { text-align: center; }
-.ms-firework { font-size: 2.5rem; animation: bounce 0.6s ease infinite alternate; }
+.ms-firework   { font-size: 2.5rem; animation: bounce 0.6s ease infinite alternate; }
 @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-6px); } }
-.ms-title { font-weight: var(--fw-black); }
-.ms-sub { font-size: 0.875rem; color: var(--color-text-dim); margin-bottom: 12px; font-weight: 600; }
+.ms-title  { font-weight: var(--fw-black); }
+.ms-sub    { font-size: 0.875rem; color: var(--color-text-dim); margin-bottom: 12px; font-weight: 600; }
 .ms-sub strong { color: #000; font-weight: var(--fw-black); }
 
 /* XP 浮动 */
