@@ -137,14 +137,17 @@ function spawnParticles(day) {
 </script>
 
 <template>
-  <div class="calendar-page">
-    <div class="section-inner">
-
-      <!-- ── 标题 ── -->
-      <div class="page-header">
-        <h2 class="section-title">📅 打卡日历</h2>
-        <button class="btn btn-danger btn-sm" @click="clearVisible = true">🗑 清空本月</button>
+  <div class="calendar-page card">
+    <!-- ── 标题 ── -->
+    <div class="card-header">
+      <h3 class="card-title">打卡日历</h3>
+      <div class="header-actions">
+        <span class="inline-stat">{{ checkedDays }}/{{ daysInMonth }} 天 · {{ daysInMonth > 0 ? Math.round(checkedDays / daysInMonth * 100) : 0 }}%</span>
+        <button class="btn btn-danger btn-sm" @click="clearVisible = true">清空</button>
       </div>
+    </div>
+
+    <div class="cal-inner">
 
       <!-- ── 日历 Tab 切换 ── -->
       <div class="cal-tabs">
@@ -164,28 +167,8 @@ function spawnParticles(day) {
         >🗑</button>
       </div>
 
-      <!-- ── 统计栏 ── -->
-      <div class="stats-bar">
-        <div class="stat-box">
-          <span class="stat-num">{{ checkedDays }}</span>
-          <span class="stat-label">已打卡</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-num">{{ daysInMonth }}</span>
-          <span class="stat-label">当月天数</span>
-        </div>
-        <div class="stat-box stat-streak">
-          <span class="stat-num">{{ store.currentStreak }}</span>
-          <span class="stat-label">🔥 连续打卡</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-num">{{ daysInMonth > 0 ? Math.round(checkedDays / daysInMonth * 100) : 0 }}%</span>
-          <span class="stat-label">完成率</span>
-        </div>
-      </div>
-
       <!-- ── 日历主体 ── -->
-      <div class="calendar-card card">
+      <div class="calendar-card">
         <!-- 月份导航 -->
         <div class="month-nav">
           <button class="nav-btn" @click="prevMonth">‹</button>
@@ -227,7 +210,6 @@ function spawnParticles(day) {
           </div>
         </div>
       </div>
-
     </div>
 
     <!-- ── 打卡确认弹窗 ── -->
@@ -320,21 +302,20 @@ function spawnParticles(day) {
 </template>
 
 <style scoped>
-.calendar-page { width: 100%; }
+.calendar-page { display: flex; flex-direction: column; gap: 12px; }
 
-.section-inner {
-  max-width: 820px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-/* ── 标题行 ── */
-.page-header {
+.card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
 }
+.card-title { font-size: 0.8rem; font-weight: var(--fw-black); color: var(--color-text-dim); text-transform: uppercase; letter-spacing: 0.06em; }
+.header-actions { display: flex; align-items: center; gap: 10px; }
+.inline-stat { font-size: 0.78rem; font-weight: var(--fw-bold); color: var(--color-text-dim); }
+
+.cal-inner { display: flex; flex-direction: column; gap: 10px; }
 
 /* ── 日历 Tabs ── */
 .cal-tabs {
@@ -380,42 +361,8 @@ function spawnParticles(day) {
   padding: 8px 12px;
 }
 
-/* ── 统计栏 ── */
-.stats-bar {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-}
-
-.stat-box {
-  background: #fff;
-  border: 3px solid #000;
-  border-radius: var(--radius);
-  padding: 14px 12px;
-  text-align: center;
-  box-shadow: var(--shadow-card);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.stat-num {
-  font-size: 1.8rem;
-  font-weight: var(--fw-black);
-  color: #000;
-  line-height: 1;
-}
-
-.stat-streak .stat-num { color: #e05c00; }
-
-.stat-label {
-  font-size: 0.72rem;
-  font-weight: var(--fw-bold);
-  color: var(--color-text-dim);
-}
-
 /* ── 日历卡片 ── */
-.calendar-card { padding: 24px; }
+.calendar-card { padding: 16px; border: 2px solid #000; border-radius: var(--radius); background: #fff; }
 
 .month-nav {
   display: flex;

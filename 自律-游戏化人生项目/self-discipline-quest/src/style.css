@@ -1,9 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
 
 /* ===== CSS Variables ===== */
 :root {
   /* Core palette */
-  --color-bg:       #FFFEF0;
+  --color-bg:       #F4F4F5;
   --color-surface:  #FFFFFF;
   --color-border:   #000000;
 
@@ -24,7 +24,7 @@
   --color-purple:      #C084FC;
 
   /* Sidebar */
-  --color-sidebar:     #F5F4E0;
+  --color-sidebar:     #FFFFFF;
   --color-card:        #FFFFFF;
   --color-card-hover:  #FAFAF0;
 
@@ -40,7 +40,7 @@
   --fw-black:   900;
 
   /* Flat shadows (no blur) */
-  --shadow-card:   4px 4px 0 #000;
+  --shadow-card:   3px 3px 0 #000;
   --shadow-btn:    3px 3px 0 #000;
   --shadow-active: 1px 1px 0 #000;
   --shadow-modal:  8px 8px 0 #000;
@@ -192,7 +192,7 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 2px 2px 0 #000;
 }
 .badge-level { background: var(--color-yellow); }
-.badge-title { background: var(--color-sky); font-family: var(--font-pixel); font-size: 0.5rem; letter-spacing: 0.03em; }
+.badge-title { background: var(--color-sky); font-family: var(--font-body); font-size: 0.72rem; }
 
 /* ===== Modal ===== */
 .modal-overlay {

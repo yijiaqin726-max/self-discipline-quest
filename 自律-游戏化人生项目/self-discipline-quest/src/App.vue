@@ -1,5 +1,6 @@
 <script setup>
 import AppSidebar   from './components/common/AppSidebar.vue'
+import KpiBar       from './components/common/KpiBar.vue'
 import ProfileView  from './views/ProfileView.vue'
 import QuestsView   from './views/QuestsView.vue'
 import SkillsView   from './views/SkillsView.vue'
@@ -10,58 +11,86 @@ import TimerView    from './views/TimerView.vue'
 <template>
   <div class="app-layout">
     <AppSidebar />
-    <main class="main-content" id="main-scroll">
-      <section id="section-profile"  class="page-section section-profile">
-        <ProfileView />
-      </section>
-      <section id="section-quests"   class="page-section section-quests">
-        <QuestsView />
-      </section>
-      <section id="section-skills"   class="page-section section-skills">
-        <SkillsView />
-      </section>
-      <section id="section-calendar" class="page-section section-calendar">
-        <CalendarView />
-      </section>
-      <section id="section-timer"    class="page-section section-timer">
-        <TimerView />
-      </section>
-    </main>
+    <div class="main-area">
+      <KpiBar />
+      <div class="dashboard-grid" id="main-scroll">
+        <section id="section-profile"  class="ga-profile">
+          <ProfileView />
+        </section>
+        <section id="section-timer"    class="ga-timer">
+          <TimerView />
+        </section>
+        <section id="section-calendar" class="ga-calendar">
+          <CalendarView />
+        </section>
+        <section id="section-quests"   class="ga-quests">
+          <QuestsView />
+        </section>
+        <section id="section-skills"   class="ga-skills">
+          <SkillsView />
+        </section>
+      </div>
+    </div>
   </div>
 </template>
 
 <style>
 .app-layout {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
   background: var(--color-bg);
 }
 
-.main-content {
+.main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.dashboard-grid {
   flex: 1;
   overflow-y: auto;
-  min-width: 0;
-  scroll-behavior: smooth;
-  height: 100vh;
+  padding: 20px 24px 48px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "profile  timer    calendar"
+    "quests   quests   skills";
+  gap: 20px;
+  align-items: start;
 }
 
-.page-section {
-  padding: 48px 40px;
-  border-bottom: 4px solid #000;
-}
+.ga-profile  { grid-area: profile; }
+.ga-timer    { grid-area: timer; }
+.ga-calendar { grid-area: calendar; }
+.ga-quests   { grid-area: quests; }
+.ga-skills   { grid-area: skills; }
 
-.section-profile  { background: var(--color-yellow); }
-.section-quests   { background: var(--color-mint);   }
-.section-skills   { background: var(--color-sky);    }
-.section-calendar { background: var(--color-pink);   }
-.section-timer    { background: var(--color-orange); }
+@media (max-width: 1100px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "profile  timer"
+      "calendar calendar"
+      "quests   quests"
+      "skills   skills";
+  }
+}
 
 @media (max-width: 700px) {
-  .main-content {
-    padding-bottom: calc(68px + env(safe-area-inset-bottom));
-  }
-  .page-section {
-    padding: 28px 16px;
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "profile"
+      "timer"
+      "calendar"
+      "quests"
+      "skills";
+    padding: 12px 12px calc(68px + env(safe-area-inset-bottom) + 16px);
+    gap: 12px;
   }
 }
 </style>

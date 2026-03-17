@@ -99,12 +99,11 @@ const groupedQuests = computed(() => {
 </script>
 
 <template>
-  <div class="quests-page">
-    <div class="section-inner">
-      <!-- ── 标题行 ── -->
-      <div class="page-header">
-        <h2 class="section-title">📋 任务看板</h2>
-        <div class="header-right">
+  <div class="quests-page card">
+    <!-- ── 标题行 ── -->
+    <div class="page-header">
+      <h3 class="card-title">任务看板</h3>
+      <div class="header-right">
           <div class="view-toggle">
             <button class="toggle-btn" :class="{ active: viewMode==='list' }" @click="viewMode='list'">列表</button>
             <button class="toggle-btn" :class="{ active: viewMode==='grouped' }" @click="viewMode='grouped'">按技能</button>
@@ -274,15 +273,14 @@ const groupedQuests = computed(() => {
     <div class="float-layer" aria-hidden="true">
       <span v-for="f in xpFloats" :key="f.id" class="xp-float" :style="{ left: f.x+'px', top: f.y+'px' }">{{ f.text }}</span>
     </div>
-  </div>
 </template>
 
 <style scoped>
-.quests-page { width: 100%; }
-.section-inner { max-width: 900px; display: flex; flex-direction: column; gap: 20px; }
+.quests-page { display: flex; flex-direction: column; gap: 14px; }
 
-.page-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-.header-right { display: flex; align-items: center; gap: 12px; }
+.page-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.header-right { display: flex; align-items: center; gap: 10px; }
+.card-title { font-size: 0.8rem; font-weight: var(--fw-black); color: var(--color-text-dim); text-transform: uppercase; letter-spacing: 0.06em; }
 
 /* 视图切换 */
 .view-toggle {
@@ -312,13 +310,13 @@ const groupedQuests = computed(() => {
 .empty-state p { font-size: 0.875rem; color: var(--color-text-dim); font-weight: 600; margin-bottom: 8px; }
 
 /* 任务卡片列表 */
-.quest-list { display: flex; flex-direction: column; gap: 12px; }
+.quest-list { display: flex; flex-direction: column; gap: 8px; }
 .quest-card {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   flex-wrap: wrap;
-  padding: 16px 20px;
+  padding: 12px 16px;
   background: #fff;
   transition: transform 0.07s, box-shadow 0.07s;
 }

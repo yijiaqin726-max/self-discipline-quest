@@ -1,61 +1,29 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref } from 'vue'
+import { User, ClipboardList, Zap, CalendarDays, Timer } from 'lucide-vue-next'
 
 const NAV_ITEMS = [
-  { id: 'section-profile',  icon: '⚔️',  label: '我的主页',   short: '主页'   },
-  { id: 'section-quests',   icon: '📋',  label: '任务看板',   short: '任务'   },
-  { id: 'section-skills',   icon: '✨',  label: '技能熟练度', short: '技能'   },
-  { id: 'section-calendar', icon: '📅',  label: '打卡日历',   short: '日历'   },
-  { id: 'section-timer',    icon: '🍅',  label: '番茄钟',     short: '计时'   },
+  { id: 'section-profile',  icon: User,          label: '我的主页',   short: '主页' },
+  { id: 'section-quests',   icon: ClipboardList, label: '任务看板',   short: '任务' },
+  { id: 'section-skills',   icon: Zap,           label: '技能熟练度', short: '技能' },
+  { id: 'section-calendar', icon: CalendarDays,  label: '打卡日历',   short: '日历' },
+  { id: 'section-timer',    icon: Timer,         label: '番茄钟',     short: '计时' },
 ]
 
 const activeSection = ref('section-profile')
-let observer = null
 
 function scrollTo(id) {
-  const scroller = document.getElementById('main-scroll')
+  activeSection.value = id
   const el = document.getElementById(id)
-  if (el && scroller) {
-    scroller.scrollTo({ top: el.offsetTop, behavior: 'smooth' })
-  }
-}
-
-onMounted(() => {
   const scroller = document.getElementById('main-scroll')
-  if (!scroller) return
-
-  observer = new IntersectionObserver(
-    (entries) => {
-      const visible = entries
-        .filter(e => e.isIntersecting)
-        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)
-      if (visible.length > 0) {
-        activeSection.value = visible[0].target.id
-      }
-    },
-    {
-      root: scroller,
-      rootMargin: '-15% 0px -55% 0px',
-      threshold: [0, 0.1, 0.5]
-    }
-  )
-
-  NAV_ITEMS.forEach(item => {
-    const el = document.getElementById(item.id)
-    if (el) observer.observe(el)
-  })
-})
-
-onUnmounted(() => {
-  if (observer) observer.disconnect()
-})
+  if (el && scroller) scroller.scrollTo({ top: el.offsetTop - 16, behavior: 'smooth' })
+}
 </script>
 
 <template>
   <!-- 桌面端侧边栏 -->
   <nav class="sidebar">
     <div class="sidebar-logo">
-      <span class="logo-icon">⚔️</span>
       <span class="logo-text">自律Quest</span>
     </div>
     <ul class="nav-list">
@@ -65,13 +33,13 @@ onUnmounted(() => {
           :class="{ active: activeSection === item.id }"
           @click="scrollTo(item.id)"
         >
-          <span class="nav-icon">{{ item.icon }}</span>
+          <component :is="item.icon" :size="17" class="nav-icon" />
           <span class="nav-label">{{ item.label }}</span>
         </button>
       </li>
     </ul>
     <div class="sidebar-footer">
-      <span class="version">v0.4.0</span>
+      <span class="version">v0.5.0</span>
     </div>
   </nav>
 
@@ -84,7 +52,7 @@ onUnmounted(() => {
       :class="{ active: activeSection === item.id }"
       @click="scrollTo(item.id)"
     >
-      <span class="tab-icon">{{ item.icon }}</span>
+      <component :is="item.icon" :size="20" />
       <span class="tab-label">{{ item.short }}</span>
     </button>
   </nav>
@@ -93,13 +61,13 @@ onUnmounted(() => {
 <style scoped>
 /* ── 侧边栏 ── */
 .sidebar {
-  width: 220px;
+  width: 240px;
   height: 100vh;
   position: sticky;
   top: 0;
   flex-shrink: 0;
   background: var(--color-sidebar);
-  border-right: 4px solid #000;
+  border-right: 3px solid #000;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
@@ -109,22 +77,21 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 24px 20px 20px;
-  border-bottom: 3px solid #000;
+  padding: 22px 20px 18px;
+  border-bottom: 2px solid #e8e8e8;
 }
 
-.logo-icon { font-size: 1.4rem; }
 .logo-text {
-  font-family: var(--font-pixel);
-  font-size: 0.58rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: var(--fw-black);
   color: #000;
-  line-height: 1.5;
-  letter-spacing: 0.04em;
+  letter-spacing: -0.02em;
 }
 
 .nav-list {
   list-style: none;
-  padding: 12px 0;
+  padding: 10px 0;
   flex: 1;
 }
 
@@ -133,39 +100,40 @@ onUnmounted(() => {
   text-align: left;
   background: transparent;
   border: none;
-  border-left: 4px solid transparent;
-  padding: 13px 20px;
+  border-left: 3px solid transparent;
+  padding: 12px 20px;
   font-family: var(--font-body);
   font-weight: var(--fw-bold);
-  font-size: 0.88rem;
+  font-size: 0.875rem;
   color: var(--color-text-dim);
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 11px;
   transition: background 0.1s, color 0.1s;
 }
 .nav-item:hover {
-  background: rgba(0, 0, 0, 0.06);
+  background: rgba(0, 0, 0, 0.04);
   color: var(--color-text);
 }
 .nav-item.active {
-  background: #000;
-  color: #fff;
+  background: rgba(255, 224, 61, 0.18);
+  color: #000;
   border-left-color: var(--color-yellow);
+  font-weight: var(--fw-black);
 }
 
-.nav-icon { font-size: 1.1rem; width: 24px; text-align: center; }
-.nav-label { font-size: 0.88rem; }
+.nav-icon { flex-shrink: 0; }
+.nav-label { font-size: 0.875rem; }
 
 .sidebar-footer {
   padding: 14px 20px;
-  border-top: 3px solid #000;
+  border-top: 2px solid #e8e8e8;
 }
 .version {
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   color: var(--color-text-muted);
-  font-family: var(--font-pixel);
+  font-weight: 600;
 }
 
 /* ── 移动端 Tab Bar ── */
@@ -197,14 +165,13 @@ onUnmounted(() => {
   cursor: pointer;
   padding: 8px 4px;
   font-family: var(--font-body);
-  transition: background 0.1s;
+  transition: background 0.1s, color 0.1s;
 }
 .tab-item.active {
-  background: #000;
-  color: #fff;
+  background: rgba(255, 224, 61, 0.25);
+  color: #000;
 }
 
-.tab-icon { font-size: 1.2rem; line-height: 1; }
 .tab-label {
   font-size: 0.6rem;
   font-weight: var(--fw-bold);

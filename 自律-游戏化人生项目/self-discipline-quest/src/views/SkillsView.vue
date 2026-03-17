@@ -55,13 +55,11 @@ function milestoneLabel(skill) {
 </script>
 
 <template>
-  <div class="skills-page">
-    <div class="section-inner">
-
-      <div class="page-header">
-        <h2 class="section-title">✨ 技能熟练度</h2>
-        <button class="btn btn-primary btn-sm" @click="openAdd">＋ 添加技能</button>
-      </div>
+  <div class="skills-page card">
+    <div class="page-header">
+      <h3 class="card-title">技能熟练度</h3>
+      <button class="btn btn-primary btn-sm" @click="openAdd">＋ 添加技能</button>
+    </div>
 
       <div v-if="skillStore.skills.length === 0" class="empty-state card">
         <div class="empty-icon">🌱</div>
@@ -192,12 +190,11 @@ function milestoneLabel(skill) {
         </div>
       </div>
     </Transition>
-  </div>
 </template>
 
 <style scoped>
-.skills-page { width: 100%; }
-.section-inner { max-width: 1000px; display: flex; flex-direction: column; gap: 24px; }
+.skills-page { display: flex; flex-direction: column; gap: 14px; }
+.card-title { font-size: 0.8rem; font-weight: var(--fw-black); color: var(--color-text-dim); text-transform: uppercase; letter-spacing: 0.06em; }
 .page-header { display: flex; align-items: center; justify-content: space-between; }
 
 /* 空状态 */
@@ -207,7 +204,7 @@ function milestoneLabel(skill) {
 .empty-state p { font-size: 0.875rem; color: var(--color-text-dim); font-weight: 600; margin-bottom: 8px; }
 
 /* 技能网格 */
-.skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+.skills-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
 
 .skill-card {
   display: flex; flex-direction: column; gap: 12px;
@@ -288,6 +285,6 @@ function milestoneLabel(skill) {
 .warn-text { color: #c00; font-weight: var(--fw-bold); }
 
 @media (max-width: 600px) {
-  .skills-grid { grid-template-columns: 1fr; }
+  .skills-grid { gap: 8px; }
 }
 </style>
