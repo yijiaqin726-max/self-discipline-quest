@@ -1,96 +1,109 @@
-// Vue 相关内容已移除，如需状态管理请用 React Context/useState
-import { computed } from 'vue'
-import { useStorage } from '../composables/useStorage'
-import { useProfileStore } from './profileStore'
-import { useSkillStore } from './skillStore'
+import { useStorage } from '../composables/useStorage';
+import { useProfileStore } from './profileStore';
+import { useSkillStore } from './skillStore';
 
-export const useQuestStore = defineStore('quest', () => {
-  const quests        = useStorage('sq_tasks', [])
-  const completionLog = useStorage('sq_completion_log', [])
-  const currentFocusId = useStorage('sq_focus_id', null)
+export function useQuestStore() {
+  const quests = useStorage('sq_tasks', []);
+  const completionLog = useStorage('sq_completion_log', []);
+  const currentFocusId = useStorage('sq_focus_id', null);
 
-  const todayStr = new Date().toISOString().slice(0, 10)
+  function getQuests() {
+    return quests.value;
+  }
 
-  const todayTasksDone = computed(() =>
-    completionLog.value.filter(e => e.date === todayStr).length
-  )
+  function getCompletionLog() {
+    return completionLog.value;
+  }
 
-  const last7DaysCompletions = computed(() =>
-    Array.from({ length: 7 }, (_, i) => {
-      const d    = new Date()
-      d.setDate(d.getDate() - (6 - i))
-      const date  = d.toISOString().slice(0, 10)
-      const label = d.toLocaleDateString('zh-CN', { weekday: 'short' })
-      const count = completionLog.value.filter(e => e.date === date).length
-      return { date, label, count }
-    })
-  )
+  function getCurrentFocusQuest() {
+    return currentFocusId.value ? quests.value.find((q) => q.id === currentFocusId.value) || null : null;
+  }
 
-  const currentFocusQuest = computed(() =>
-    currentFocusId.value
-      ? quests.value.find(q => q.id === currentFocusId.value) ?? null
-      : null
-  )
+  function getTodayTasksDone() {
+    const today = new Date().toISOString().slice(0, 10);
+    return completionLog.value.filter((entry) => entry.date === today).length;
+  }
 
-  // ── CRUD ──────────────────────────────────────────────────────────────────
-  // status: 'pending' | 'active' | 'done'
-  function addQuest(name, xp, skillId, opts = {}) {
-    quests.value.push({
-      id:                Date.now(),
-      name,
-      xp,
-      skillId,
-      count:             0,
-      status:            opts.status ?? 'pending',
-      estimatedPomodoros: opts.estimatedPomodoros ?? 1,
-    })
+  function getLast7DaysCompletions() {
+    return Array.from({ length: 7 }, (_, i) => {
+      const day = new Date();
+      day.setDate(day.getDate() - (6 - i));
+      const date = day.toISOString().slice(0, 10);
+      const label = day.toLocaleDateString('zh-CN', { weekday: 'short' });
+      const count = completionLog.value.filter((entry) => entry.date === date).length;
+      return { date, label, count };
+    });
+  }
+
+  function addQuest(name, xp, skillId, options = {}) {
+    const trimmed = (name || '').trim();
+    if (!trimmed) return null;
+
+    const nextQuest = {
+      id: Date.now(),
+      name: trimmed,
+      xp: Number(xp) || 0,
+      skillId: skillId || null,
+      count: 0,
+      status: options.status || 'pending',
+      estimatedPomodoros: options.estimatedPomodoros || 1,
+    };
+
+    quests.value = [...quests.value, nextQuest];
+    return nextQuest;
   }
 
   function removeQuest(id) {
-    if (currentFocusId.value === id) currentFocusId.value = null
-    quests.value = quests.value.filter(q => q.id !== id)
+    if (currentFocusId.value === id) {
+      currentFocusId.value = null;
+    }
+    quests.value = quests.value.filter((quest) => quest.id !== id);
   }
 
   function updateQuest(id, fields) {
-    const quest = quests.value.find(q => q.id === id)
-    if (quest) Object.assign(quest, fields)
+    quests.value = quests.value.map((quest) => (quest.id === id ? { ...quest, ...fields } : quest));
   }
 
   function setFocus(id) {
-    currentFocusId.value = currentFocusId.value === id ? null : id
+    currentFocusId.value = currentFocusId.value === id ? null : id;
   }
 
   function clearFocus() {
-    currentFocusId.value = null
+    currentFocusId.value = null;
   }
 
-  // 返回里程碑触发信息（如有），供 UI 展示奖励弹窗
   function completeQuest(id) {
-    const quest = quests.value.find(q => q.id === id)
-    if (!quest) return null
-    quest.count++
-    completionLog.value.push({ date: new Date().toISOString().slice(0, 10), xp: quest.xp })
+    const target = quests.value.find((quest) => quest.id === id);
+    if (!target) return null;
 
-    const profileStore = useProfileStore()
-    profileStore.addXP(quest.xp)
+    const updatedQuest = { ...target, count: target.count + 1 };
+    quests.value = quests.value.map((quest) => (quest.id === id ? updatedQuest : quest));
 
-    const skillStore = useSkillStore()
-    const milestone  = skillStore.addXP(quest.skillId, quest.xp)
-    return milestone
+    const today = new Date().toISOString().slice(0, 10);
+    completionLog.value = [...completionLog.value, { date: today, xp: target.xp }];
+
+    const profileStore = useProfileStore();
+    profileStore.addXP(target.xp);
+
+    if (target.skillId) {
+      const skillStore = useSkillStore();
+      return skillStore.addXP(target.skillId, target.xp);
+    }
+
+    return null;
   }
 
   return {
-    quests,
-    completionLog,
-    currentFocusId,
-    currentFocusQuest,
-    todayTasksDone,
-    last7DaysCompletions,
+    getQuests,
+    getCompletionLog,
+    getCurrentFocusQuest,
+    getTodayTasksDone,
+    getLast7DaysCompletions,
     addQuest,
     removeQuest,
     updateQuest,
     setFocus,
     clearFocus,
     completeQuest,
-  }
-})
+  };
+}

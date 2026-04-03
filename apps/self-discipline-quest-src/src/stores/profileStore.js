@@ -1,71 +1,93 @@
-// 已移除 Pinia/Vue 相关内容。请用 React Context/useState 替代。
-import { computed } from 'vue'
-// import { useStorage } from '../composables/useStorage'
+import { useStorage } from '../composables/useStorage';
 
 const LEVEL_TITLES = [
-  { min: 0, title: '新手冒险者' },
-  { min: 100, title: '见习探索者' },
-  { min: 300, title: '熟练旅者' },
-  { min: 600, title: '精英战士' },
-  { min: 1000, title: '传奇勇者' },
-  { min: 2000, title: '神话英雄' }
-]
+  { min: 0, title: 'Novice Adventurer' },
+  { min: 100, title: 'Apprentice Explorer' },
+  { min: 300, title: 'Seasoned Traveler' },
+  { min: 600, title: 'Elite Fighter' },
+  { min: 1000, title: 'Legendary Hero' },
+  { min: 2000, title: 'Mythic Champion' },
+];
 
-// export const useProfileStore = defineStore('profile', () => {
-  const profile = useStorage('sq_profile', { 
-    nickname: '勇敢的冒险者',
-    motto: '每天进步一点点',
+export function useProfileStore() {
+  const profile = useStorage('sq_profile', {
+    nickname: 'Brave Scholar',
+    motto: 'Progress every day',
     avatar: '',
     totalXP: 0,
-    goals: []
-  })
+    goals: [],
+  });
 
-  // Vue 相关内容已移除，如需状态管理请用 React Context/useState
-  const level = computed(() => {
-    const xp = profile.value.totalXP
-    for (let i = LEVEL_TITLES.length - 1; i >= 0; i--) {
-      if (xp >= LEVEL_TITLES[i].min) return i + 1
-    }
-    return 1
-  })
-
-  const levelTitle = computed(() => {
-    const xp = profile.value.totalXP
-    let title = LEVEL_TITLES[0].title
-    for (const t of LEVEL_TITLES) {
-      if (xp >= t.min) title = t.title
-    }
-    return title
-  })
-
-  const nextLevelXP = computed(() => {
-    const xp = profile.value.totalXP
-    for (let i = 0; i < LEVEL_TITLES.length; i++) {
-      if (xp < LEVEL_TITLES[i].min) return LEVEL_TITLES[i].min
-    }
-    return null
-  })
-
-  function addXP(amount) {
-    profile.value.totalXP += amount
+  function getProfile() {
+    return profile.value;
   }
 
-  function updateProfile(fields) {
-    Object.assign(profile.value, fields)
+  function getLevel() {
+    const xp = profile.value.totalXP;
+    for (let i = LEVEL_TITLES.length - 1; i >= 0; i -= 1) {
+      if (xp >= LEVEL_TITLES[i].min) return i + 1;
+    }
+    return 1;
+  }
+
+  function getLevelTitle() {
+    const xp = profile.value.totalXP;
+    let currentTitle = LEVEL_TITLES[0].title;
+    for (const levelData of LEVEL_TITLES) {
+      if (xp >= levelData.min) currentTitle = levelData.title;
+    }
+    return currentTitle;
+  }
+
+  function getNextLevelXP() {
+    const xp = profile.value.totalXP;
+    for (const levelData of LEVEL_TITLES) {
+      if (xp < levelData.min) return levelData.min;
+    }
+    return null;
+  }
+
+  function updateProfile(nextFields) {
+    profile.value = { ...profile.value, ...nextFields };
+  }
+
+  function addXP(amount) {
+    profile.value = { ...profile.value, totalXP: Math.max(0, profile.value.totalXP + amount) };
   }
 
   function addGoal(text) {
-    profile.value.goals.push({ id: Date.now(), text, done: false })
+    const trimmed = (text || '').trim();
+    if (!trimmed) return;
+    profile.value = {
+      ...profile.value,
+      goals: [...profile.value.goals, { id: Date.now(), text: trimmed, done: false }],
+    };
   }
 
   function toggleGoal(id) {
-    const goal = profile.value.goals.find(g => g.id === id)
-    if (goal) goal.done = !goal.done
+    profile.value = {
+      ...profile.value,
+      goals: profile.value.goals.map((goal) => (goal.id === id ? { ...goal, done: !goal.done } : goal)),
+    };
   }
 
   function removeGoal(id) {
-    profile.value.goals = profile.value.goals.filter(g => g.id !== id)
+    profile.value = {
+      ...profile.value,
+      goals: profile.value.goals.filter((goal) => goal.id !== id),
+    };
   }
 
-  return { profile, level, levelTitle, nextLevelXP, addXP, updateProfile, addGoal, toggleGoal, removeGoal }
-})
+  return {
+    LEVEL_TITLES,
+    getProfile,
+    getLevel,
+    getLevelTitle,
+    getNextLevelXP,
+    updateProfile,
+    addXP,
+    addGoal,
+    toggleGoal,
+    removeGoal,
+  };
+}

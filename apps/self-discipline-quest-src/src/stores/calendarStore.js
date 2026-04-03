@@ -1,121 +1,151 @@
-// 已移除 Pinia/Vue 相关内容。请用 React Context/useState 替代。
-import { computed } from 'vue'
-import { useStorage } from '../composables/useStorage'
+import { useStorage } from '../composables/useStorage';
 
-// ── 迁移旧数据 ─────────────────────────────────────────────
-function migrateFromLegacy() {
+function migrateLegacyCheckins() {
   try {
-    const raw = localStorage.getItem('sq_checkins')
-    if (!raw) return null
-    const parsed = JSON.parse(raw)
-    if (!parsed || Object.keys(parsed).length === 0) return null
-    return parsed
+    const raw = localStorage.getItem('sq_checkins');
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || Object.keys(parsed).length === 0) return null;
+    localStorage.removeItem('sq_checkins');
+    return parsed;
   } catch {
-    return null
+    return null;
   }
 }
 
-export const useCalendarStore = defineStore('calendar', () => {
-  // 初始化：检测旧数据并迁移
-  const legacyData = migrateFromLegacy()
-  const defaultId = 'cal_' + Date.now()
+export function useCalendarStore() {
+  const legacyData = migrateLegacyCheckins();
+  const defaultId = `cal_${Date.now()}`;
 
   const defaultState = {
-    calendars: [{ id: defaultId, name: '默认打卡', color: '#4DFFA0', createdAt: Date.now() }],
+    calendars: [{ id: defaultId, name: 'Default Calendar', color: '#4DFFA0', createdAt: Date.now() }],
     activeCalendarId: defaultId,
-    data: { [defaultId]: legacyData || {} }
+    data: { [defaultId]: legacyData || {} },
+  };
+
+  const store = useStorage('sq_calendars_v2', defaultState);
+
+  const PALETTE = ['#4DFFA0', '#FFE03D', '#5BC8FF', '#FF6FB0', '#FF8C3D'];
+
+  function save(next) {
+    store.value = next;
   }
 
-  const store = useStorage('sq_calendars_v2', defaultState)
-
-  // 清理旧 key（只执行一次）
-  if (legacyData) {
-    localStorage.removeItem('sq_checkins')
+  function getSnapshot() {
+    return store.value;
   }
-
-  // ── Getters ──────────────────────────────────────────────
-  // Vue 相关内容已移除，如需状态管理请用 React Context/useState
-
-  function getActiveData() {
-    return store.value.data[store.value.activeCalendarId] || {}
-  }
-
-  // ── 日历 CRUD ──────────────────────────────────────────────
-  const PALETTE = ['#4DFFA0', '#FFE03D', '#5BC8FF', '#FF6FB0', '#FF8C3D']
 
   function addCalendar(name, color) {
-    const id = 'cal_' + Date.now()
-    const usedColors = store.value.calendars.map(c => c.color)
-    const autoColor = color || PALETTE.find(c => !usedColors.includes(c)) || PALETTE[store.value.calendars.length % PALETTE.length]
-    store.value.calendars.push({ id, name: name.trim() || '新日历', color: autoColor, createdAt: Date.now() })
-    store.value.data[id] = {}
-    store.value.activeCalendarId = id
+    const current = getSnapshot();
+    const id = `cal_${Date.now()}`;
+    const usedColors = current.calendars.map((c) => c.color);
+    const autoColor = color || PALETTE.find((c) => !usedColors.includes(c)) || PALETTE[current.calendars.length % PALETTE.length];
+
+    save({
+      ...current,
+      calendars: [...current.calendars, { id, name: (name || '').trim() || 'New Calendar', color: autoColor, createdAt: Date.now() }],
+      activeCalendarId: id,
+      data: { ...current.data, [id]: {} },
+    });
   }
 
   function deleteCalendar(id) {
-    if (store.value.calendars.length <= 1) return
-    store.value.calendars = store.value.calendars.filter(c => c.id !== id)
-    delete store.value.data[id]
-    if (store.value.activeCalendarId === id) {
-      store.value.activeCalendarId = store.value.calendars[0].id
-    }
+    const current = getSnapshot();
+    if (current.calendars.length <= 1) return;
+
+    const calendars = current.calendars.filter((c) => c.id !== id);
+    const data = { ...current.data };
+    delete data[id];
+
+    save({
+      ...current,
+      calendars,
+      data,
+      activeCalendarId: current.activeCalendarId === id ? calendars[0].id : current.activeCalendarId,
+    });
   }
 
   function renameCalendar(id, newName) {
-    const cal = store.value.calendars.find(c => c.id === id)
-    if (cal && newName.trim()) cal.name = newName.trim()
+    const trimmed = (newName || '').trim();
+    if (!trimmed) return;
+
+    const current = getSnapshot();
+    save({
+      ...current,
+      calendars: current.calendars.map((c) => (c.id === id ? { ...c, name: trimmed } : c)),
+    });
   }
 
   function setActiveCalendar(id) {
-    if (store.value.calendars.some(c => c.id === id)) {
-      store.value.activeCalendarId = id
-    }
+    const current = getSnapshot();
+    if (!current.calendars.some((c) => c.id === id)) return;
+    save({ ...current, activeCalendarId: id });
   }
 
-  // ── 打卡操作（全部基于当前 activeCalendarId）────────────────
   function getMonthCheckins(year, month) {
-    const key = `${year}-${String(month).padStart(2, '0')}`
-    return getActiveData()[key] || []
+    const key = `${year}-${String(month).padStart(2, '0')}`;
+    const current = getSnapshot();
+    const activeData = current.data[current.activeCalendarId] || {};
+    return activeData[key] || [];
   }
 
   function isCheckedIn(year, month, day) {
-    return getMonthCheckins(year, month).includes(day)
+    return getMonthCheckins(year, month).includes(day);
   }
 
   function toggleCheckin(year, month, day) {
-    const id = store.value.activeCalendarId
-    const key = `${year}-${String(month).padStart(2, '0')}`
-    if (!store.value.data[id]) store.value.data[id] = {}
-    if (!store.value.data[id][key]) store.value.data[id][key] = []
-    const arr = store.value.data[id][key]
-    const idx = arr.indexOf(day)
-    store.value.data[id][key] = idx === -1 ? [...arr, day] : arr.filter(d => d !== day)
+    const key = `${year}-${String(month).padStart(2, '0')}`;
+    const current = getSnapshot();
+    const activeId = current.activeCalendarId;
+    const activeData = { ...(current.data[activeId] || {}) };
+    const monthDays = activeData[key] || [];
+
+    activeData[key] = monthDays.includes(day) ? monthDays.filter((d) => d !== day) : [...monthDays, day];
+
+    save({
+      ...current,
+      data: {
+        ...current.data,
+        [activeId]: activeData,
+      },
+    });
   }
 
   function clearMonth(year, month) {
-    const id = store.value.activeCalendarId
-    const key = `${year}-${String(month).padStart(2, '0')}`
-    if (store.value.data[id]) store.value.data[id][key] = []
+    const key = `${year}-${String(month).padStart(2, '0')}`;
+    const current = getSnapshot();
+    const activeId = current.activeCalendarId;
+    const activeData = { ...(current.data[activeId] || {}), [key]: [] };
+
+    save({
+      ...current,
+      data: {
+        ...current.data,
+        [activeId]: activeData,
+      },
+    });
   }
 
-  // ── 连续打卡 ──────────────────────────────────────────────
-  const currentStreak = computed(() => {
-    const today = new Date()
-    let streak = 0
-    let d = new Date(today)
+  function getCurrentStreak() {
+    const today = new Date();
+    let streak = 0;
+    const cursor = new Date(today);
+
     while (true) {
-      const y = d.getFullYear(), m = d.getMonth() + 1, day = d.getDate()
-      if (!isCheckedIn(y, m, day)) break
-      streak++
-      d.setDate(d.getDate() - 1)
+      const y = cursor.getFullYear();
+      const m = cursor.getMonth() + 1;
+      const d = cursor.getDate();
+      if (!isCheckedIn(y, m, d)) break;
+      streak += 1;
+      cursor.setDate(cursor.getDate() - 1);
     }
-    return streak
-  })
+
+    return streak;
+  }
 
   return {
-    calendars,
-    activeCalendarId,
-    activeCalendar,
+    PALETTE,
+    getSnapshot,
     addCalendar,
     deleteCalendar,
     renameCalendar,
@@ -124,7 +154,6 @@ export const useCalendarStore = defineStore('calendar', () => {
     isCheckedIn,
     toggleCheckin,
     clearMonth,
-    currentStreak,
-    PALETTE
-  }
-})
+    getCurrentStreak,
+  };
+}
