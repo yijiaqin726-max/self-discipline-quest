@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia'
+// 已移除 Pinia/Vue 相关内容。请用 React Context/useState 替代。
 import { computed } from 'vue'
 import { useStorage } from '../composables/useStorage'
 
@@ -34,11 +34,7 @@ export const useCalendarStore = defineStore('calendar', () => {
   }
 
   // ── Getters ──────────────────────────────────────────────
-  const calendars       = computed(() => store.value.calendars)
-  const activeCalendarId = computed(() => store.value.activeCalendarId)
-  const activeCalendar  = computed(() =>
-    store.value.calendars.find(c => c.id === store.value.activeCalendarId)
-  )
+  // Vue 相关内容已移除，如需状态管理请用 React Context/useState
 
   function getActiveData() {
     return store.value.data[store.value.activeCalendarId] || {}

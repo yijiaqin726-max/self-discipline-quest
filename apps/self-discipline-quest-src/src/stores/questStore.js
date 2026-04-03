@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia'
+// Vue 相关内容已移除，如需状态管理请用 React Context/useState
 import { computed } from 'vue'
 import { useStorage } from '../composables/useStorage'
 import { useProfileStore } from './profileStore'

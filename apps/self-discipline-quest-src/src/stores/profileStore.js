@@ -1,6 +1,6 @@
-import { defineStore } from 'pinia'
+// 已移除 Pinia/Vue 相关内容。请用 React Context/useState 替代。
 import { computed } from 'vue'
-import { useStorage } from '../composables/useStorage'
+// import { useStorage } from '../composables/useStorage'
 
 const LEVEL_TITLES = [
   { min: 0, title: '新手冒险者' },
@@ -11,8 +11,8 @@ const LEVEL_TITLES = [
   { min: 2000, title: '神话英雄' }
 ]
 
-export const useProfileStore = defineStore('profile', () => {
-  const profile = useStorage('sq_profile', {
+// export const useProfileStore = defineStore('profile', () => {
+  const profile = useStorage('sq_profile', { 
     nickname: '勇敢的冒险者',
     motto: '每天进步一点点',
     avatar: '',
@@ -20,6 +20,7 @@ export const useProfileStore = defineStore('profile', () => {
     goals: []
   })
 
+  // Vue 相关内容已移除，如需状态管理请用 React Context/useState
   const level = computed(() => {
     const xp = profile.value.totalXP
     for (let i = LEVEL_TITLES.length - 1; i >= 0; i--) {
