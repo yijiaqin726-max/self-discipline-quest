@@ -88,7 +88,7 @@ export function Dashboard() {
 
   return (
     <div className="min-h-screen bg-surface text-on-surface">
-      <Sidebar active="tasks" onChange={(key) => key === 'add-task' && setIsModalOpen(true)} />
+      <Sidebar active="dashboard" onChange={(key) => key === 'add-task' && setIsModalOpen(true)} />
       <div className="ml-64">
         <header className="sticky top-0 z-30 flex items-center justify-between px-8 py-4 bg-white/80 backdrop-blur-md border-b border-zinc-200">
           <h2 className="text-xl font-bold">Dashboard</h2>
