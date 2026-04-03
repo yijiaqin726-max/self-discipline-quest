@@ -1,6 +1,6 @@
 import React from 'react';
-import { Sidebar } from '../components/kineticScholar/Sidebar';
-import { ProgressCard } from '../components/kineticScholar/ProgressCard';
+import { Sidebar } from '../components/Sidebar';
+import { ProgressCard } from '../components/ProgressCard';
 
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -15,6 +15,15 @@ export function Calendar() {
         </header>
 
         <main className="p-8 space-y-8">
+          <section className="bg-surface-container-lowest rounded-3xl p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs uppercase tracking-widest text-zinc-500">Calendar Planner</p>
+                <h3 className="text-2xl font-extrabold">Stitch 日历视图</h3>
+              </div>
+              <img className="w-10 h-10 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3S8eZgCrpqo5q2t9imerfi1a3IrEurL8sjl3TGnNsmEqKnwp7wv_4ZNivPRHuODrPZjfdvvjK3XYwwR9nAteg04aBBNkRCtQ3wK4Vh8NhaxJw74McXgesT8_GCm4Bde6U0J__k4zdpoSMWQxlUZYO0ERNlnR6bpRDTaPWpXFZOd_gZ3-D7hLChhiss7d5Yr2sp_XchWmPQfxjGx6zaETIG3FuLXjw2UvuHGAxLa5ebjHMMbT-QLrgapTP55YEhbpfVRwVFwOdF4E" alt="Calendar avatar" />
+            </div>
+          </section>
           <section className="grid grid-cols-12 gap-6">
             <article className="col-span-12 lg:col-span-7 bg-white dark:bg-zinc-800 rounded-3xl p-8 shadow-sm border border-zinc-200 dark:border-zinc-700">
               <div className="flex justify-between items-center mb-6">

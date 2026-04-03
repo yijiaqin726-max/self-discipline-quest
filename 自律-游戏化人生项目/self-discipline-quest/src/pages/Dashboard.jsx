@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from 'react';
-import { Sidebar } from '../components/kineticScholar/Sidebar';
-import { TaskCard } from '../components/kineticScholar/TaskCard';
-import { TimerWidget } from '../components/kineticScholar/TimerWidget';
-import { ProgressCard } from '../components/kineticScholar/ProgressCard';
-import { StatsSection } from '../components/kineticScholar/StatsSection';
-import { TaskModal } from '../components/kineticScholar/TaskModal';
+import { Sidebar } from '../components/Sidebar';
+import { TaskCard } from '../components/TaskCard';
+import { TimerWidget } from '../components/Timer';
+import { ProgressCard } from '../components/ProgressCard';
+import { StatsSection } from '../components/StatsSection';
+import { TaskModal } from '../components/Modal';
 
 const sampleTasks = [
   { id: 1, title: 'Advanced Quantum Mechanics Problem Set', status: 'todo', xp: 150, due: '2:00 PM' },
@@ -102,17 +102,31 @@ export function Dashboard() {
         </header>
 
         <main className="p-8 space-y-8">
+          <section className="bg-surface-container-lowest rounded-3xl p-6 shadow-sm">
+            <div className="flex flex-col md:flex-row items-center gap-4">
+              <div>
+                <p className="text-xs uppercase tracking-widest text-amber-500 font-bold">Scholar Dashboard</p>
+                <h3 className="text-2xl font-extrabold">Welcome back, Alex</h3>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">来自 stitch 的视觉和数据展示，实时更新你的任务与进度。</p>
+              </div>
+              <img
+                className="w-20 h-20 rounded-full border-4 border-amber-300"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkZi7qTk4y3vJq4sslJNS8XwJaViy1HEnkH8hb5zDSmXz4uW0f0fE_rNYQXPuI9XfozD1SbzdpcjiWiO6cVFiWh1rRooJrZYjBgPB4Ryljw7fjxJwXlgl9N4L71EVQtvflvRQw4nEIu1GsJEWTxnEzhH0wvWVZLz9-1Q-aI3YwN9LTlMt9qSExRht42nSxrkO5o2XahnXE3F3DHPgMDvK5ua_i8Z8cVIhytfbNA7OSKHXshP2Pnv4NsiWKshcAfCJMwOYwF-nq92I"
+                alt="Alex Avatar"
+              />
+            </div>
+          </section>
           <section>
             <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
               <div>
                 <h3 className="text-3xl font-black">Today's Focus</h3>
-                <p className="text-zinc-600 dark:text-zinc-300">You've earned {totalXP} XP so far. {nextLevel} XP away from Level 15.</p>
+                <p className="text-zinc-600 dark:text-zinc-300">Level {level} • {totalXP} XP earned • {xpToNextLevel} XP to Level {level + 1}</p>
               </div>
               <button onClick={() => setIsModalOpen(true)} className="rounded-full bg-amber-500 text-white px-4 py-2 font-bold">New Task</button>
             </div>
           </section>
 
-          <StatsSection stats={statItems} />
+          <StatsSection stats={statItemsCurrent} />
 
           <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div className="space-y-4">

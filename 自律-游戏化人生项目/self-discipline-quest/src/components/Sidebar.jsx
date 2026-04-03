@@ -10,9 +10,19 @@ const navItems = [
 export function Sidebar({ active = 'dashboard', onChange }) {
   return (
     <aside className="fixed left-0 top-0 h-full w-64 p-4 bg-zinc-50 dark:bg-zinc-900 text-zinc-800 dark:text-zinc-100 border-r border-zinc-200">
-      <div className="mb-8">
+      <div className="mb-8 px-2">
         <h1 className="text-lg font-black tracking-tight">The Kinetic Scholar</h1>
-        <p className="text-xs font-bold text-zinc-600 dark:text-zinc-300">Level 14 Focused</p>
+        <div className="flex items-center gap-2 mt-2">
+          <img
+            className="w-8 h-8 rounded-full border-2 border-yellow-300"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkZi7qTk4y3vJq4sslJNS8XwJaViy1HEnkH8hb5zDSmXz4uW0f0fE_rNYQXPuI9XfozD1SbzdpcjiWiO6cVFiWh1rRooJrZYjBgPB4Ryljw7fjxJwXlgl9N4L71EVQtvflvRQw4nEIu1GsJEWTxnEzhH0wvWVZLz9-1Q-aI3YwN9LTlMt9qSExRht42nSxrkO5o2XahnXE3F3DHPgMDvK5ua_i8Z8cVIhytfbNA7OSKHXshP2Pnv4NsiWKshcAfCJMwOYwF-nq92I"
+            alt="Scholar Avatar"
+          />
+          <div>
+            <p className="text-xs font-bold text-zinc-700 dark:text-zinc-200">Level 14 Focused</p>
+            <p className="text-[10px] text-zinc-500 dark:text-zinc-400">Alex Chen</p>
+          </div>
+        </div>
       </div>
       <nav className="flex flex-col gap-2">
         {navItems.map((item) => {

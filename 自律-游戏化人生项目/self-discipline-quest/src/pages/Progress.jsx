@@ -1,7 +1,7 @@
 import React from 'react';
-import { Sidebar } from '../components/kineticScholar/Sidebar';
-import { StatsSection } from '../components/kineticScholar/StatsSection';
-import { ProgressCard } from '../components/kineticScholar/ProgressCard';
+import { Sidebar } from '../components/Sidebar';
+import { StatsSection } from '../components/StatsSection';
+import { ProgressCard } from '../components/ProgressCard';
 
 const statItems = [
   { key: 'xp', label: 'Total XP', value: '12,380', progress: 78 },
@@ -24,6 +24,18 @@ export function Progress() {
         </header>
 
         <main className="p-8 space-y-8">
+          <section className="bg-surface-container-lowest rounded-3xl p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs uppercase tracking-widest text-zinc-500">Progress Analytics</p>
+                <h3 className="text-2xl font-extrabold">Stitch 进度概览</h3>
+              </div>
+              <div className="flex items-center gap-3">
+                <img className="w-10 h-10 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZVa4POjdtfSwuyZrV0cyhZWj-Z1L0PwZhxHvSKjQ40gMEj5CesEqs4z5hrprPeTY8vBnqok8n_dOtt34sLvQ642nUZPM6bW4tz07scm3vW1Bc8TzDcp0MxQ5z8qO9ohjH9mgfxF0fy-nSeuvJFqXPRfU4P9pq0oHLDbQBTRHprWcYfnVhv_eGjv800OBmBEqtypCQUEcNT_MZmOm9qN6h6dVOzXSM7POV5uWqEv-drWZF3OBDrRfOPLqYpnb7_dnxXSjXAtBsnsM" alt="Scholar" />
+                <span className="text-sm font-bold">Lv 14</span>
+              </div>
+            </div>
+          </section>
           <StatsSection stats={statItems} />
 
           <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
