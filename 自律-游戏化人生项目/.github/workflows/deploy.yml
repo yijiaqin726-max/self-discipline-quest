@@ -1,4 +1,4 @@
-name: Deploy self-discipline-quest to GitHub Pages
+name: Deploy 自律-游戏化人生项目 to GitHub Pages
 
 on:
   push:
@@ -8,9 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: self-discipline-quest
 
     steps:
       - name: Checkout repository
