@@ -4,51 +4,112 @@ export function TaskModal({ open, onClose, onCreate, initial = {} }) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden">
-        <header className="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-700">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-inverse-surface/10 p-4 backdrop-blur-md">
+      <main className="flex max-h-[92vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-surface-container-lowest shadow-[0_20px_40px_rgba(106,91,0,0.06)]">
+        <header className="flex items-center justify-between px-8 py-6">
           <div>
-            <h2 className="text-2xl font-black">New Task Focus</h2>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">Design your next productivity sprint</p>
+            <h2 className="text-2xl font-black tracking-tight text-on-surface">New Task Focus</h2>
+            <p className="mt-1 text-sm font-medium text-on-surface-variant">Design your next productivity sprint</p>
           </div>
-          <button onClick={onClose} className="w-10 h-10 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-center">
+          <button onClick={onClose} className="flex h-10 w-10 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-surface-container">
             <span className="material-symbols-outlined">close</span>
           </button>
         </header>
 
-        <main className="p-6 space-y-6">
-          <label className="block">
-            <span className="text-xs uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Task Title</span>
-            <input className="w-full mt-1 p-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900" defaultValue={initial.title || ''} placeholder="What needs to be accomplished?" />
-          </label>
+        <div className="custom-scrollbar flex-1 overflow-y-auto px-8 pb-8">
+          <div className="flex flex-col gap-8">
+            <section className="flex flex-col gap-2">
+              <label className="px-1 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Task Title</label>
+              <input className="w-full border-none bg-transparent p-0 text-xl font-bold text-on-surface placeholder:text-surface-container-highest focus:ring-0" defaultValue={initial.title || ''} placeholder="What needs to be accomplished?" />
+              <div className="h-0.5 w-full overflow-hidden rounded-full bg-surface-container-high">
+                <div className="h-full w-1/3 bg-primary-container" />
+              </div>
+            </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <label className="block">
-              <span className="text-xs uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Due Date</span>
-              <input type="date" className="w-full mt-1 p-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900" defaultValue={initial.due || ''} />
-            </label>
-            <label className="block">
-              <span className="text-xs uppercase tracking-wider text-zinc-500 dark:text-zinc-400">XP Reward</span>
-              <input type="number" min="0" className="w-full mt-1 p-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900" defaultValue={initial.xp || 100} />
-            </label>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <section className="flex flex-col gap-2">
+                <label className="px-1 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Due Date</label>
+                <div className="group flex cursor-pointer items-center gap-3 rounded-xl bg-surface-container px-4 py-3 text-on-surface transition-colors hover:bg-surface-container-high">
+                  <span className="material-symbols-outlined text-primary">calendar_today</span>
+                  <span className="text-sm font-semibold">March 14, 2024</span>
+                  <span className="material-symbols-outlined ml-auto text-on-surface-variant transition-transform group-hover:translate-y-0.5">expand_more</span>
+                </div>
+              </section>
+
+              <section className="flex flex-col gap-2">
+                <label className="px-1 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">XP Reward</label>
+                <div className="relative">
+                  <input type="number" min="0" defaultValue={initial.xp || 250} className="w-full rounded-xl border-2 border-transparent bg-surface-container-low px-4 py-3 font-black text-on-surface-variant transition-all focus:border-primary-container focus:ring-0" />
+                  <div className="absolute right-4 top-1/2 flex -translate-y-1/2 items-center gap-1.5 rounded-full bg-primary-container px-3 py-1 text-[10px] font-black">
+                    <span className="material-symbols-outlined text-[14px]">workspace_premium</span>
+                    + XP
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <section className="flex flex-col gap-3">
+              <label className="px-1 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Priority Level</label>
+              <div className="grid grid-cols-3 gap-3 rounded-2xl bg-surface-container p-1.5">
+                <button className="rounded-xl px-4 py-2.5 text-sm font-bold text-on-surface-variant transition-all hover:bg-surface-container-high">Low</button>
+                <button className="rounded-xl bg-surface-container-lowest px-4 py-2.5 text-sm font-bold text-on-surface shadow-sm ring-1 ring-black/5 transition-all">Medium</button>
+                <button className="rounded-xl px-4 py-2.5 text-sm font-bold text-on-surface-variant transition-all hover:bg-surface-container-high">High</button>
+              </div>
+            </section>
+
+            <section className="flex flex-col gap-3">
+              <label className="px-1 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Category / Skill Tag</label>
+              <div className="flex flex-wrap gap-2">
+                <span className="inline-flex items-center gap-2 rounded-full bg-tertiary-container px-4 py-2 text-xs font-black text-on-tertiary-container ring-1 ring-tertiary/10">
+                  Mathematics
+                  <span className="material-symbols-outlined cursor-pointer text-[16px]">close</span>
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-full bg-secondary-container px-4 py-2 text-xs font-black text-on-secondary-container ring-1 ring-secondary/10">
+                  Research
+                  <span className="material-symbols-outlined cursor-pointer text-[16px]">close</span>
+                </span>
+                <button className="inline-flex items-center gap-1.5 rounded-full border-2 border-dashed border-outline-variant px-4 py-2 text-xs font-bold text-on-surface-variant transition-colors hover:bg-surface-container">
+                  <span className="material-symbols-outlined text-[16px]">add</span>
+                  Add Skill
+                </button>
+              </div>
+            </section>
+
+            <section className="flex flex-col gap-4">
+              <div className="flex items-center justify-between px-1">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Estimated Focus Time</label>
+                <span className="text-sm font-black text-primary">45 <span className="text-[10px] font-medium text-on-surface-variant">MINS</span></span>
+              </div>
+              <div className="relative h-2 w-full rounded-full bg-surface-container">
+                <div className="absolute h-full w-3/4 rounded-full bg-gradient-to-r from-primary to-primary-container shadow-[0_0_8px_rgba(106,91,0,0.2)]" />
+                <div className="absolute left-3/4 top-1/2 h-5 w-5 -translate-y-1/2 rounded-full border-4 border-primary bg-surface-container-lowest shadow-lg" />
+              </div>
+              <div className="flex justify-between text-[10px] font-bold text-outline-variant">
+                <span>15m</span><span>30m</span><span>45m</span><span>60m</span><span>90m+</span>
+              </div>
+            </section>
+
+            <section className="flex flex-col gap-2">
+              <label className="px-1 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Focus Notes</label>
+              <textarea className="w-full resize-none rounded-xl border-none bg-surface-container-low p-4 text-sm font-medium text-on-surface placeholder:text-outline/50 focus:ring-2 focus:ring-primary-container/30" rows={4} defaultValue={initial.notes || ''} placeholder="Break down your approach or list specific requirements..." />
+            </section>
           </div>
+        </div>
 
-          <label className="block">
-            <span className="text-xs uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Notes</span>
-            <textarea className="w-full mt-1 p-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900" rows={4} defaultValue={initial.notes || ''}></textarea>
-          </label>
-        </main>
-
-        <footer className="flex justify-end gap-3 p-6 border-t border-zinc-200 dark:border-zinc-700">
-          <button onClick={onClose} className="px-5 py-3 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200">Discard</button>
-          <button
-            onClick={onCreate}
-            className="px-5 py-3 rounded-xl bg-gradient-to-br from-yellow-500 to-amber-400 text-white font-black hover:opacity-95"
-          >
-            Create Task
+        <footer className="flex gap-3 border-t border-surface-container bg-surface-container-low/50 p-6">
+          <button onClick={onClose} className="flex-1 rounded-full bg-surface-container-high py-4 text-sm font-black tracking-wide text-on-surface transition-all active:scale-95 hover:bg-surface-container-highest">
+            Discard Task
+          </button>
+          <button onClick={onCreate} className="group flex-[2] rounded-full bg-gradient-to-br from-primary to-primary-container py-4 text-sm font-black tracking-wide text-on-primary-container shadow-[0_10px_20px_rgba(106,91,0,0.15)] transition-all active:scale-95 hover:shadow-[0_15px_30px_rgba(106,91,0,0.2)]">
+            <span className="flex items-center justify-center gap-2">
+              <span className="material-symbols-outlined text-[20px]">bolt</span>
+              Create Task
+            </span>
           </button>
         </footer>
+      </main>
+
+      <div className="pointer-events-none fixed bottom-10 left-1/2 flex -translate-x-1/2 items-center gap-3 rounded-full border border-white/20 bg-white/70 px-6 py-3 shadow-2xl backdrop-blur-xl">
+        <div className="h-2 w-2 animate-pulse rounded-full bg-primary" />
+        <p className="text-xs font-bold tracking-tight text-on-surface-variant">Completing this will grant you <span className="font-black text-primary">Level 15 Scholar</span> status.</p>
       </div>
-    </div>
-  );
-}
