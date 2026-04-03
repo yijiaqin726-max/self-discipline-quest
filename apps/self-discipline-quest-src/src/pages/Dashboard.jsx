@@ -7,6 +7,45 @@ export function Dashboard() {
   const [timerRunning, setTimerRunning] = useState(false);
   const [seconds, setSeconds] = useState(25 * 60);
   const [timerMode, setTimerMode] = useState('focus'); // 'focus' | 'break'
+  const [tasks, setTasks] = useState([
+    {
+      id: 1,
+      title: 'Research Thesis: Neural Plasticity',
+      status: 'in-progress',
+      xp: 250,
+      meta: 'High Priority',
+      metaIcon: 'flag',
+      timeLabel: '25:00',
+      accent: 'primary',
+    },
+    {
+      id: 2,
+      title: 'Advanced Quantum Mechanics Problem Set',
+      status: 'todo',
+      xp: 150,
+      meta: '2:00 PM',
+      metaIcon: 'schedule',
+      accent: 'neutral',
+    },
+    {
+      id: 3,
+      title: 'Submit Lab Report #4',
+      status: 'overdue',
+      xp: 100,
+      meta: 'Due Yesterday',
+      metaIcon: 'warning',
+      accent: 'error',
+    },
+    {
+      id: 4,
+      title: 'Review Analytical Chemistry Notes',
+      status: 'done',
+      xp: 50,
+      meta: 'Awarded',
+      metaIcon: 'check',
+      accent: 'done',
+    },
+  ]);
   const intervalRef = useRef(null);
 
   useEffect(() => {
@@ -37,6 +76,35 @@ export function Dashboard() {
 
   const handleSidebarChange = (key) => {
     if (key === 'add-task') setModalOpen(true);
+  };
+
+  const toggleTaskDone = (id) => {
+    setTasks((prev) =>
+      prev.map((task) => {
+        if (task.id !== id) return task;
+        if (task.status === 'done') {
+          return {
+            ...task,
+            status: 'todo',
+            meta: 'Reopened',
+            metaIcon: 'restart_alt',
+            accent: 'neutral',
+          };
+        }
+
+        return {
+          ...task,
+          status: 'done',
+          meta: 'Awarded',
+          metaIcon: 'check',
+          accent: 'done',
+        };
+      }),
+    );
+  };
+
+  const removeTask = (id) => {
+    setTasks((prev) => prev.filter((task) => task.id !== id));
   };
 
   return (
@@ -91,92 +159,93 @@ export function Dashboard() {
           </header>
 
           <div className="grid gap-4">
-            {/* Active Task */}
-            <div className="task-card-active group flex items-center justify-between rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:shadow-md">
-              <div className="flex items-center gap-5">
-                <div className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-2 border-primary transition-colors group-hover:bg-primary/10">
-                  <div className="h-2.5 w-2.5 rounded-full bg-primary" />
-                </div>
-                <div>
-                  <h4 className="text-lg font-bold leading-tight text-gray-900">Research Thesis: Neural Plasticity</h4>
-                  <div className="mt-2 flex items-center gap-4">
-                    <span className="rounded-lg bg-yellow-50 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-yellow-700">In Progress</span>
-                    <span className="flex items-center gap-1 text-xs font-bold text-primary">
-                      <span className="material-symbols-outlined filled-icon text-sm">stars</span>
-                      +250 XP
-                    </span>
-                    <span className="flex items-center gap-1 text-xs text-gray-400">
-                      <span className="material-symbols-outlined text-sm">flag</span>
-                      High Priority
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="rounded-xl border border-gray-100 bg-gray-50 px-4 py-1.5 font-mono text-sm font-semibold text-gray-600">25:00</div>
-                <button className="rounded-full p-2 text-primary transition-colors hover:bg-primary/10">
-                  <span className="material-symbols-outlined filled-icon text-3xl">play_circle</span>
-                </button>
-              </div>
-            </div>
+            {tasks.map((task) => {
+              const isDone = task.status === 'done';
+              const isActive = task.status === 'in-progress';
+              const isOverdue = task.status === 'overdue';
 
-            {/* Standard Task */}
-            <div className="group flex items-center justify-between rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:border-gray-200">
-              <div className="flex items-center gap-5">
-                <div className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-2 border-gray-200 transition-colors group-hover:border-primary" />
-                <div>
-                  <h4 className="text-lg font-bold leading-tight text-gray-900">Advanced Quantum Mechanics Problem Set</h4>
-                  <div className="mt-2 flex items-center gap-4">
-                    <span className="rounded-lg bg-gray-100 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-gray-500">To-do</span>
-                    <span className="flex items-center gap-1 text-xs font-bold text-primary">
-                      <span className="material-symbols-outlined filled-icon text-sm">stars</span>
-                      +150 XP
-                    </span>
-                    <span className="flex items-center gap-1 text-xs text-gray-400">
-                      <span className="material-symbols-outlined text-sm">schedule</span>
-                      2:00 PM
-                    </span>
+              return (
+                <div
+                  key={task.id}
+                  className={`group flex items-center justify-between rounded-2xl border bg-white p-6 shadow-sm transition-all ${
+                    isDone
+                      ? 'border-transparent bg-gray-50/50 opacity-60'
+                      : isOverdue
+                        ? 'border-red-50/50 border-l-4 border-l-red-400'
+                        : isActive
+                          ? 'task-card-active border-gray-100 hover:shadow-md'
+                          : 'border-gray-100 hover:border-gray-200'
+                  }`}
+                >
+                  <div className="flex items-center gap-5">
+                    <button
+                      onClick={() => toggleTaskDone(task.id)}
+                      className={`flex h-6 w-6 items-center justify-center rounded-full border-2 transition-colors ${
+                        isDone
+                          ? 'border-green-500 bg-green-500 text-white'
+                          : isOverdue
+                            ? 'border-red-200 hover:border-red-400'
+                            : isActive
+                              ? 'border-primary hover:bg-primary/10'
+                              : 'border-gray-200 hover:border-primary'
+                      }`}
+                      title={isDone ? 'Mark as todo' : 'Mark as done'}
+                    >
+                      {isDone ? <span className="material-symbols-outlined text-base">check</span> : <div className={`h-2.5 w-2.5 rounded-full ${isActive ? 'bg-primary' : 'bg-transparent'}`} />}
+                    </button>
+                    <div>
+                      <h4 className={`text-lg font-bold leading-tight ${isDone ? 'text-gray-400 line-through' : 'text-gray-900'}`}>{task.title}</h4>
+                      <div className="mt-2 flex items-center gap-4">
+                        <span
+                          className={`rounded-lg px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider ${
+                            isDone
+                              ? 'bg-gray-200/50 text-gray-400'
+                              : isOverdue
+                                ? 'bg-red-50 text-red-600'
+                                : isActive
+                                  ? 'bg-yellow-50 text-yellow-700'
+                                  : 'bg-gray-100 text-gray-500'
+                          }`}
+                        >
+                          {isDone ? 'Done' : isOverdue ? 'Overdue' : isActive ? 'In Progress' : 'To-do'}
+                        </span>
+                        <span className={`flex items-center gap-1 text-xs font-bold ${isOverdue ? 'text-red-500' : isDone ? 'text-gray-400' : 'text-primary'}`}>
+                          <span className="material-symbols-outlined filled-icon text-sm">stars</span>
+                          +{task.xp} XP
+                        </span>
+                        <span className={`flex items-center gap-1 text-xs ${isOverdue ? 'font-medium text-red-400' : isDone ? 'text-gray-400' : 'text-gray-400'}`}>
+                          <span className="material-symbols-outlined text-sm">{task.metaIcon}</span>
+                          {task.meta}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {isActive && (
+                      <>
+                        <div className="rounded-xl border border-gray-100 bg-gray-50 px-4 py-1.5 font-mono text-sm font-semibold text-gray-600">{task.timeLabel}</div>
+                        <button className="rounded-full p-2 text-primary transition-colors hover:bg-primary/10">
+                          <span className="material-symbols-outlined filled-icon text-3xl">play_circle</span>
+                        </button>
+                      </>
+                    )}
+                    <button
+                      onClick={() => removeTask(task.id)}
+                      className="rounded-full p-2 text-gray-400 transition hover:bg-red-50 hover:text-red-500"
+                      title="Delete task"
+                    >
+                      <span className="material-symbols-outlined">delete</span>
+                    </button>
                   </div>
                 </div>
-              </div>
-              <button className="p-2 text-gray-400 opacity-0 transition-all group-hover:opacity-100 hover:text-gray-900">
-                <span className="material-symbols-outlined">more_vert</span>
-              </button>
-            </div>
+              );
+            })}
 
-            {/* Overdue Task */}
-            <div className="group flex items-center justify-between rounded-2xl border border-red-50/50 border-l-4 border-l-red-400 bg-white p-6 shadow-sm">
-              <div className="flex items-center gap-5">
-                <div className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-2 border-red-200 transition-colors hover:border-red-400" />
-                <div>
-                  <h4 className="text-lg font-bold leading-tight text-gray-900">Submit Lab Report #4</h4>
-                  <div className="mt-2 flex items-center gap-4">
-                    <span className="rounded-lg bg-red-50 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-red-600">Overdue</span>
-                    <span className="flex items-center gap-1 text-xs font-bold text-red-500">
-                      <span className="material-symbols-outlined filled-icon text-sm">warning</span>
-                      +100 XP
-                    </span>
-                    <span className="text-xs font-medium text-red-400">Due Yesterday</span>
-                  </div>
-                </div>
+            {tasks.length === 0 && (
+              <div className="rounded-2xl border border-dashed border-gray-200 bg-white p-8 text-center text-sm font-semibold text-gray-400">
+                No tasks left. Click Add Task to create a new challenge.
               </div>
-            </div>
-
-            {/* Completed Task */}
-            <div className="flex items-center justify-between rounded-2xl border border-transparent bg-gray-50/50 p-6 opacity-60">
-              <div className="flex items-center gap-5">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-500">
-                  <span className="material-symbols-outlined text-base font-bold text-white">check</span>
-                </div>
-                <div>
-                  <h4 className="text-lg font-bold leading-tight text-gray-400 line-through">Review Analytical Chemistry Notes</h4>
-                  <div className="mt-2 flex items-center gap-4">
-                    <span className="rounded-lg bg-gray-200/50 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-gray-400">Done</span>
-                    <span className="text-xs font-bold text-gray-400">Awarded: 50 XP</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Bento Stats */}

@@ -3,6 +3,8 @@ import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Dashboard } from './pages/Dashboard';
 import { Progress } from './pages/Progress';
 import { Calendar } from './pages/Calendar';
+import { Tasks } from './pages/Tasks';
+import { Settings } from './pages/Settings';
 
 export default function App() {
   return (
@@ -10,8 +12,10 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/tasks" element={<Tasks />} />
         <Route path="/progress" element={<Progress />} />
         <Route path="/calendar" element={<Calendar />} />
+        <Route path="/settings" element={<Settings />} />
       </Routes>
     </HashRouter>
   );

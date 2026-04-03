@@ -3,10 +3,10 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 const navItems = [
   { key: 'dashboard', label: 'Dashboard', icon: 'dashboard', path: '/dashboard' },
-  { key: 'tasks', label: 'Tasks', icon: 'assignment' },
+  { key: 'tasks', label: 'Tasks', icon: 'assignment', path: '/tasks' },
   { key: 'calendar', label: 'Calendar', icon: 'calendar_today', path: '/calendar' },
   { key: 'progress', label: 'Progress', icon: 'equalizer', path: '/progress' },
-  { key: 'settings', label: 'Settings', icon: 'settings' },
+  { key: 'settings', label: 'Settings', icon: 'settings', path: '/settings' },
 ];
 
 export function Sidebar({ active = 'dashboard', onChange }) {
