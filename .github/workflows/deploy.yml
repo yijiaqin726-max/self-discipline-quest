@@ -36,7 +36,7 @@ jobs:
       # ── Build Self-Discipline-Quest ─────────────────────
       - name: Install & Build Self-Discipline-Quest
         run: |
-          cd "自律-游戏化人生项目/self-discipline-quest"
+          cd "apps/self-discipline-quest-src"
           npm ci
           npm run build
 
@@ -46,7 +46,7 @@ jobs:
           mkdir -p merged
           cp -r "笔记系统项目/noteflow/dist/." merged/
           mkdir -p "merged/self-discipline-quest"
-          cp -r "自律-游戏化人生项目/self-discipline-quest/dist/." "merged/self-discipline-quest/"
+          cp -r "apps/self-discipline-quest-src/dist/." "merged/self-discipline-quest/"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

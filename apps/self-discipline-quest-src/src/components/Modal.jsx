@@ -113,3 +113,6 @@ export function TaskModal({ open, onClose, onCreate, initial = {} }) {
         <div className="h-2 w-2 animate-pulse rounded-full bg-primary" />
         <p className="text-xs font-bold tracking-tight text-on-surface-variant">Completing this will grant you <span className="font-black text-primary">Level 15 Scholar</span> status.</p>
       </div>
+    </div>
+  );
+}
