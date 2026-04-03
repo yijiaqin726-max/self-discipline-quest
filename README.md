@@ -4,4 +4,4 @@
 
 🎮 A gamified self-discipline tracker built with React + Tailwind CSS.
 
-🔗 **Live Demo:** [https://yijiaqin726-max.github.io/self-discipline-quest/](https://yijiaqin726-max.github.io/self-discipline-quest/)
+🔗 **Live Demo:** [https://yijiaqin726-max.github.io/Qin-Yijia/self-discipline-quest/](https://yijiaqin726-max.github.io/Qin-Yijia/self-discipline-quest/)

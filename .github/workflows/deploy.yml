@@ -37,7 +37,8 @@ jobs:
       - name: Prepare dist folder
         run: |
           mkdir -p merged
-          cp -r "apps/self-discipline-quest-src/dist/." merged/
+          mkdir -p "merged/self-discipline-quest"
+          cp -r "apps/self-discipline-quest-src/dist/." "merged/self-discipline-quest/"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
