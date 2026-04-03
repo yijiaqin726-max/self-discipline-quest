@@ -19,15 +19,12 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Prepare for subdirectory deployment
-        run: |
-          mkdir -p gh-pages-deploy/self-discipline-quest
-          cp -r dist/* gh-pages-deploy/self-discipline-quest/
-
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./gh-pages-deploy
+          publish_dir: ./dist
+          destination_dir: ./self-discipline-quest
           publish_branch: gh-pages
-          strategy: force
+          force_orphan: true
+          allow_empty_commit: false
