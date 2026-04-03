@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Progress &amp; Analytics | The Kinetic Scholar</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#d3d5d5",
+                        "on-tertiary-fixed": "#3a4a00",
+                        "inverse-on-surface": "#9c9d9d",
+                        "on-secondary": "#fcf964",
+                        "secondary-dim": "#545200",
+                        "tertiary-fixed": "#d7f874",
+                        "on-background": "#2d2f2f",
+                        "error-dim": "#b92902",
+                        "on-tertiary": "#e1ff87",
+                        "surface-container-high": "#e1e3e3",
+                        "secondary-fixed": "#ece856",
+                        "primary-fixed": "#fddc00",
+                        "on-tertiary-fixed-variant": "#536900",
+                        "on-tertiary-container": "#4a5e00",
+                        "primary": "#6a5b00",
+                        "on-secondary-fixed-variant": "#605e00",
+                        "surface-container": "#e7e8e8",
+                        "secondary-fixed-dim": "#ddda49",
+                        "on-error": "#ffefec",
+                        "surface-container-highest": "#dbdddd",
+                        "error": "#b02500",
+                        "primary-dim": "#5c4f00",
+                        "on-error-container": "#520c00",
+                        "tertiary-fixed-dim": "#c9ea68",
+                        "tertiary-container": "#d7f874",
+                        "primary-container": "#fddc00",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-variant": "#dbdddd",
+                        "on-primary": "#fff3c5",
+                        "on-primary-fixed": "#463b00",
+                        "on-primary-container": "#5b4e00",
+                        "inverse-surface": "#0c0f0f",
+                        "primary-fixed-dim": "#edce00",
+                        "on-primary-fixed-variant": "#665800",
+                        "outline-variant": "#acadad",
+                        "on-secondary-fixed": "#434100",
+                        "secondary": "#605e00",
+                        "on-surface": "#2d2f2f",
+                        "background": "#f6f6f6",
+                        "surface": "#f6f6f6",
+                        "surface-container-low": "#f0f1f1",
+                        "secondary-container": "#ece856",
+                        "on-secondary-container": "#565400",
+                        "tertiary": "#4e6300",
+                        "outline": "#767777",
+                        "inverse-primary": "#fddc00",
+                        "surface-bright": "#f6f6f6",
+                        "surface-tint": "#6a5b00",
+                        "error-container": "#f95630",
+                        "on-surface-variant": "#5a5c5c",
+                        "tertiary-dim": "#445600"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .progress-gradient {
+            background: linear-gradient(135deg, #6a5b00 0%, #fddc00 100%);
+        }
+        .editorial-text {
+            letter-spacing: -0.02em;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+<!-- SideNavBar (Execution from JSON) -->
+<aside class="fixed left-0 top-0 h-full z-40 flex flex-col p-4 bg-zinc-50 dark:bg-zinc-900 w-64 rounded-r-none">
+<div class="mb-8 px-4">
+<h1 class="text-lg font-black tracking-tight text-zinc-900 dark:text-zinc-50">The Kinetic Scholar</h1>
+<p class="text-xs text-zinc-500 font-medium tracking-wide">Level 14 Focused</p>
+</div>
+<nav class="flex-1 space-y-2">
+<!-- Tasks -->
+<a class="text-zinc-500 dark:text-zinc-400 px-4 py-2 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 transition-colors flex items-center gap-3 rounded-lg group" href="#">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+<span class="text-sm font-medium tracking-wide uppercase" style="letter-spacing: 0.05em;">Tasks</span>
+</a>
+<!-- Calendar -->
+<a class="text-zinc-500 dark:text-zinc-400 px-4 py-2 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 transition-colors flex items-center gap-3 rounded-lg group" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+<span class="text-sm font-medium tracking-wide uppercase" style="letter-spacing: 0.05em;">Calendar</span>
+</a>
+<!-- Progress (ACTIVE STATE) -->
+<a class="text-yellow-700 dark:text-yellow-400 font-bold bg-zinc-200 dark:bg-zinc-800 rounded-lg px-4 py-2 transition-all duration-200 active:scale-95 flex items-center gap-3 group" href="#">
+<span class="material-symbols-outlined" data-icon="equalizer">equalizer</span>
+<span class="text-sm font-bold tracking-wide uppercase" style="letter-spacing: 0.05em;">Progress</span>
+</a>
+<!-- Settings -->
+<a class="text-zinc-500 dark:text-zinc-400 px-4 py-2 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 transition-colors flex items-center gap-3 rounded-lg group" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-sm font-medium tracking-wide uppercase" style="letter-spacing: 0.05em;">Settings</span>
+</a>
+</nav>
+<div class="mt-auto space-y-6 pt-6 border-t border-zinc-200 dark:border-zinc-800">
+<button class="w-full bg-primary-container text-on-primary-container font-bold py-3 px-4 rounded-full flex items-center justify-center gap-2 transition-all hover:brightness-95">
+<span class="material-symbols-outlined text-xl" data-icon="add">add</span>
+<span class="text-sm">Add Task</span>
+</button>
+<div class="flex items-center gap-3 px-2">
+<div class="h-10 w-10 rounded-xl bg-secondary-container flex items-center justify-center overflow-hidden">
+<img alt="Student avatar" class="w-full h-full object-cover" data-alt="Professional portrait of a young male student wearing glasses, soft warm lighting, academic setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZVa4POjdtfSwuyZrV0cyhZWj-Z1L0PwZhxHvSKjQ40gMEj5CesEqs4z5hrprPeTY8vBnqok8n_dOtt34sLvQ642nUZPM6bW4tz07scm3vW1Bc8TzDcp0MxQ5z8qO9ohjH9mgfxF0fy-nSeuvJFqXPRfU4P9pq0oHLDbQBTRHprWcYfnVhv_eGjv800OBmBEqtypCQUEcNT_MZmOm9qN6h6dVOzXSM7POV5uWqEv-drWZF3OBDrRfOPLqYpnb7_dnxXSjXAtBsnsM"/>
+</div>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-on-surface">Alex Chen</span>
+<span class="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">Scholar ID: #4492</span>
+</div>
+</div>
+<a class="text-zinc-500 dark:text-zinc-400 px-4 py-2 hover:text-zinc-900 dark:hover:text-zinc-200 flex items-center gap-3 group" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="text-sm font-medium tracking-wide uppercase" style="letter-spacing: 0.05em;">Logout</span>
+</a>
+</div>
+</aside>
+<!-- TopNavBar (Execution from JSON) -->
+<header class="sticky top-0 right-0 w-full z-30 flex items-center justify-between px-8 py-3 ml-64 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md shadow-sm dark:shadow-none transition-all">
+<div class="flex items-center gap-8">
+<h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-50 editorial-text">Progress Insights</h2>
+<nav class="hidden md:flex gap-6">
+<a class="text-zinc-500 hover:text-zinc-900 text-sm font-medium transition-all" href="#">Tasks</a>
+<a class="text-zinc-500 hover:text-zinc-900 text-sm font-medium transition-all" href="#">Focus</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative w-64">
+<input class="w-full bg-surface-container-low border-none rounded-full px-10 py-1.5 text-sm focus:ring-2 focus:ring-primary/20" placeholder="Search insights..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg" data-icon="search">search</span>
+</div>
+<div class="flex items-center gap-3">
+<button class="bg-surface-container-high text-on-surface px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-surface-container-highest transition-all">Pomodoro</button>
+<div class="h-8 w-8 rounded-full border-2 border-primary-fixed flex items-center justify-center">
+<span class="text-[10px] font-black text-primary">14</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 p-8 min-h-screen">
+<div class="max-w-7xl mx-auto space-y-8">
+<!-- Bento Header Grid -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Weekly XP Growth Chart -->
+<div class="col-span-8 bg-surface-container-lowest rounded-xl p-6 shadow-[0_20px_40px_rgba(106,91,0,0.04)]">
+<div class="flex justify-between items-end mb-8">
+<div>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1 block">Velocity Tracking</span>
+<h3 class="text-2xl font-extrabold editorial-text leading-none">Weekly XP Growth</h3>
+</div>
+<div class="text-right">
+<span class="text-3xl font-black text-primary editorial-text">4,820</span>
+<span class="text-[10px] block font-bold text-tertiary uppercase tracking-widest">+12% vs Last Week</span>
+</div>
+</div>
+<!-- Chart Placeholder Visual -->
+<div class="h-64 flex items-end justify-between gap-4 px-2 relative">
+<!-- Simulated Chart Path -->
+<div class="absolute inset-0 flex items-center justify-center opacity-10">
+<svg class="w-full h-full preserve-3d" viewbox="0 0 800 200">
+<path d="M0,150 Q100,50 200,120 T400,60 T600,100 T800,20" fill="none" stroke="currentColor" stroke-width="4"></path>
+</svg>
+</div>
+<!-- Daily Pillars -->
+<div class="flex-1 flex flex-col items-center group cursor-pointer">
+<div class="w-full h-[60%] bg-surface-container-high rounded-t-lg group-hover:bg-primary-container transition-all"></div>
+<span class="mt-3 text-[10px] font-bold text-on-surface-variant">MON</span>
+</div>
+<div class="flex-1 flex flex-col items-center group cursor-pointer">
+<div class="w-full h-[45%] bg-surface-container-high rounded-t-lg group-hover:bg-primary-container transition-all"></div>
+<span class="mt-3 text-[10px] font-bold text-on-surface-variant">TUE</span>
+</div>
+<div class="flex-1 flex flex-col items-center group cursor-pointer">
+<div class="w-full h-[85%] bg-surface-container-high rounded-t-lg group-hover:bg-primary-container transition-all"></div>
+<span class="mt-3 text-[10px] font-bold text-on-surface-variant">WED</span>
+</div>
+<div class="flex-1 flex flex-col items-center group cursor-pointer">
+<div class="w-full h-[55%] bg-primary-container rounded-t-lg shadow-sm"></div>
+<span class="mt-3 text-[10px] font-bold text-primary font-black">THU</span>
+</div>
+<div class="flex-1 flex flex-col items-center group cursor-pointer">
+<div class="w-full h-[70%] bg-surface-container-high rounded-t-lg group-hover:bg-primary-container transition-all"></div>
+<span class="mt-3 text-[10px] font-bold text-on-surface-variant">FRI</span>
+</div>
+<div class="flex-1 flex flex-col items-center group cursor-pointer">
+<div class="w-full h-[30%] bg-surface-container-high rounded-t-lg group-hover:bg-primary-container transition-all"></div>
+<span class="mt-3 text-[10px] font-bold text-on-surface-variant">SAT</span>
+</div>
+<div class="flex-1 flex flex-col items-center group cursor-pointer">
+<div class="w-full h-[40%] bg-surface-container-high rounded-t-lg group-hover:bg-primary-container transition-all"></div>
+<span class="mt-3 text-[10px] font-bold text-on-surface-variant">SUN</span>
+</div>
+</div>
+</div>
+<!-- Streak History (Bento Sidebar) -->
+<div class="col-span-4 space-y-6">
+<!-- Current Streak Card -->
+<div class="bg-primary text-on-primary-fixed rounded-xl p-6 relative overflow-hidden">
+<div class="relative z-10">
+<span class="text-[10px] font-bold uppercase tracking-widest opacity-80 mb-1 block">Active Momentum</span>
+<h3 class="text-3xl font-black editorial-text">24 Day Streak</h3>
+<div class="mt-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-fixed" data-icon="local_fire_department" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="text-xs font-bold">Personal Record: 42 days</span>
+</div>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-10">
+<span class="material-symbols-outlined text-[120px]" data-icon="auto_awesome">auto_awesome</span>
+</div>
+</div>
+<!-- Streak Calendar Grid -->
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm">
+<div class="flex justify-between items-center mb-4">
+<h4 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Consistency Grid</h4>
+<span class="text-[10px] text-primary font-bold">Past 30 Days</span>
+</div>
+<div class="grid grid-cols-7 gap-2">
+<!-- Simulated 30 day dots -->
+<!-- Row 1 -->
+<div class="aspect-square bg-primary-container rounded-sm"></div>
+<div class="aspect-square bg-primary-container rounded-sm"></div>
+<div class="aspect-square bg-surface-container rounded-sm"></div>
+<div class="aspect-square bg-primary-container rounded-sm"></div>
+<div class="aspect-square bg-primary-container rounded-sm"></div>
+<div class="aspect-square bg-primary-container rounded-sm"></div>
+<div class="aspect-square bg-primary-container rounded-sm"></div>
+<!-- Row 2 -->
+<div class="aspect-square bg-primary-container rounded-sm"></div>
+<div class="aspect-square bg-primary-container rounded-sm"></div>
+<div class="aspect-square bg-primary-container rounded-sm"></div>
+<div class="aspect-square bg-primary-container rounded-sm"></div>
+<div class="aspect-square bg-primary-container rounded-sm"></div>
+<div class="aspect-square bg-surface-container rounded-sm"></div>
+<div class="aspect-square bg-primary-container rounded-sm"></div>
+<!-- Row 3 -->
+<div class="aspect-square bg-primary-container rounded-sm"></div>
+<div class="aspect-square bg-primary-container rounded-sm"></div>
+<div class="aspect-square bg-primary-container rounded-sm"></div>
+<div class="aspect-square bg-primary-container rounded-sm"></div>
+<div class="aspect-square bg-primary-container rounded-sm"></div>
+<div class="aspect-square bg-primary-container rounded-sm"></div>
+<div class="aspect-square bg-primary-container rounded-sm"></div>
+<!-- Row 4 -->
+<div class="aspect-square bg-primary-container rounded-sm"></div>
+<div class="aspect-square bg-primary-container rounded-sm"></div>
+<div class="aspect-square bg-primary-container rounded-sm"></div>
+<div class="aspect-square bg-primary-container rounded-sm"></div>
+<div class="aspect-square bg-primary-container rounded-sm"></div>
+<div class="aspect-square bg-primary-container rounded-sm"></div>
+<div class="aspect-square bg-primary-container rounded-sm"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Middle Section: Skills & Tasks -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Skill Progress Bars -->
+<div class="col-span-4 bg-surface-container-low rounded-xl p-6">
+<h3 class="text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-6">Core Competencies</h3>
+<div class="space-y-8">
+<!-- Skill 1 -->
+<div>
+<div class="flex justify-between items-end mb-2">
+<div>
+<h4 class="text-sm font-bold editorial-text">Mathematics</h4>
+<span class="text-[10px] text-on-surface-variant font-medium">Applied Logic</span>
+</div>
+<span class="text-xs font-black text-primary">LVL 08</span>
+</div>
+<div class="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full progress-gradient w-[85%] shadow-[0_0_8px_rgba(106,91,0,0.2)]"></div>
+</div>
+<div class="mt-1 text-right">
+<span class="text-[9px] font-bold text-on-surface-variant uppercase">85% to level 09</span>
+</div>
+</div>
+<!-- Skill 2 -->
+<div>
+<div class="flex justify-between items-end mb-2">
+<div>
+<h4 class="text-sm font-bold editorial-text">Cognitive Science</h4>
+<span class="text-[10px] text-on-surface-variant font-medium">Memory Systems</span>
+</div>
+<span class="text-xs font-black text-primary">LVL 12</span>
+</div>
+<div class="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full progress-gradient w-[42%]"></div>
+</div>
+<div class="mt-1 text-right">
+<span class="text-[9px] font-bold text-on-surface-variant uppercase">42% to level 13</span>
+</div>
+</div>
+<!-- Skill 3 -->
+<div>
+<div class="flex justify-between items-end mb-2">
+<div>
+<h4 class="text-sm font-bold editorial-text">Research Methods</h4>
+<span class="text-[10px] text-on-surface-variant font-medium">Synthesis</span>
+</div>
+<span class="text-xs font-black text-primary">LVL 05</span>
+</div>
+<div class="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full progress-gradient w-[92%] shadow-[0_0_8px_rgba(106,91,0,0.2)]"></div>
+</div>
+<div class="mt-1 text-right">
+<span class="text-[9px] font-bold text-on-surface-variant uppercase">92% to level 06</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Completed Tasks Trend -->
+<div class="col-span-5 bg-surface-container-lowest rounded-xl p-6 shadow-sm">
+<h3 class="text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-6">Execution Trend</h3>
+<div class="h-48 flex items-end gap-3 px-4">
+<!-- Bar chart -->
+<div class="flex-1 flex flex-col items-center">
+<div class="w-full h-12 bg-surface-container rounded-t-sm"></div>
+<span class="mt-2 text-[8px] font-bold opacity-40">M</span>
+</div>
+<div class="flex-1 flex flex-col items-center">
+<div class="w-full h-24 bg-surface-container rounded-t-sm"></div>
+<span class="mt-2 text-[8px] font-bold opacity-40">T</span>
+</div>
+<div class="flex-1 flex flex-col items-center">
+<div class="w-full h-16 bg-surface-container rounded-t-sm"></div>
+<span class="mt-2 text-[8px] font-bold opacity-40">W</span>
+</div>
+<div class="flex-1 flex flex-col items-center">
+<div class="w-full h-32 bg-primary rounded-t-sm"></div>
+<span class="mt-2 text-[8px] font-bold text-primary">T</span>
+</div>
+<div class="flex-1 flex flex-col items-center">
+<div class="w-full h-28 bg-surface-container rounded-t-sm"></div>
+<span class="mt-2 text-[8px] font-bold opacity-40">F</span>
+</div>
+<div class="flex-1 flex flex-col items-center">
+<div class="w-full h-8 bg-surface-container rounded-t-sm"></div>
+<span class="mt-2 text-[8px] font-bold opacity-40">S</span>
+</div>
+<div class="flex-1 flex flex-col items-center">
+<div class="w-full h-4 bg-surface-container rounded-t-sm"></div>
+<span class="mt-2 text-[8px] font-bold opacity-40">S</span>
+</div>
+</div>
+<div class="mt-6 flex justify-around text-center">
+<div>
+<span class="block text-lg font-black editorial-text">128</span>
+<span class="text-[9px] font-bold text-on-surface-variant uppercase tracking-widest">Completed</span>
+</div>
+<div class="w-px h-8 bg-surface-container-highest"></div>
+<div>
+<span class="block text-lg font-black editorial-text">14</span>
+<span class="text-[9px] font-bold text-on-surface-variant uppercase tracking-widest">Avg / Day</span>
+</div>
+</div>
+</div>
+<!-- Study Time Distribution -->
+<div class="col-span-3 bg-surface-container-lowest rounded-xl p-6 shadow-sm flex flex-col">
+<h3 class="text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-4">Focus Hours</h3>
+<div class="relative flex-1 flex items-center justify-center">
+<!-- Doughnut Mockup -->
+<div class="w-32 h-32 rounded-full border-[12px] border-surface-container-highest flex items-center justify-center">
+<div class="absolute inset-0 w-32 h-32 rounded-full border-[12px] border-primary border-t-transparent border-l-transparent rotate-45 mx-auto"></div>
+<div class="text-center">
+<span class="text-xl font-black editorial-text">4.2</span>
+<span class="block text-[8px] font-bold text-on-surface-variant">HRS / DAY</span>
+</div>
+</div>
+</div>
+<div class="mt-4 space-y-2">
+<div class="flex items-center justify-between text-[10px]">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<span class="font-medium">Deep Work</span>
+</div>
+<span class="font-bold">65%</span>
+</div>
+<div class="flex items-center justify-between text-[10px]">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-surface-container-highest"></div>
+<span class="font-medium">Review</span>
+</div>
+<span class="font-bold">35%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Section: Level Milestones -->
+<div class="bg-surface-container-lowest rounded-xl p-8 shadow-sm">
+<div class="flex justify-between items-center mb-10">
+<h3 class="text-sm font-bold uppercase tracking-widest text-on-surface-variant">Unlock Timeline</h3>
+<button class="text-xs font-bold text-primary flex items-center gap-1 group">
+                        View All Achievements
+                        <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<div class="relative">
+<!-- Progress Line -->
+<div class="absolute top-1/2 left-0 w-full h-[2px] bg-surface-container-highest -translate-y-1/2"></div>
+<div class="absolute top-1/2 left-0 w-[60%] h-[2px] bg-primary -translate-y-1/2 shadow-[0_0_10px_rgba(106,91,0,0.3)]"></div>
+<!-- Milestones -->
+<div class="relative z-10 flex justify-between">
+<!-- Past -->
+<div class="flex flex-col items-center">
+<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-lg" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div class="mt-4 text-center">
+<span class="block text-[10px] font-black editorial-text">Level 10</span>
+<span class="text-[9px] text-on-surface-variant font-medium">Flow State Badge</span>
+</div>
+</div>
+<!-- Past -->
+<div class="flex flex-col items-center">
+<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-lg" data-icon="military_tech" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+</div>
+<div class="mt-4 text-center">
+<span class="block text-[10px] font-black editorial-text">Level 12</span>
+<span class="text-[9px] text-on-surface-variant font-medium">Night Owl Perk</span>
+</div>
+</div>
+<!-- Current -->
+<div class="flex flex-col items-center">
+<div class="w-14 h-14 -mt-2 rounded-full bg-primary-container border-4 border-surface-container-lowest text-primary flex items-center justify-center shadow-xl ring-4 ring-primary-fixed/20 relative">
+<span class="material-symbols-outlined text-2xl" data-icon="stars" style="font-variation-settings: 'FILL' 1;">stars</span>
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-surface text-surface text-[8px] font-bold px-2 py-1 rounded whitespace-nowrap">YOU ARE HERE</div>
+</div>
+<div class="mt-4 text-center">
+<span class="block text-xs font-black editorial-text text-primary">Level 14</span>
+<span class="text-[9px] text-on-surface-variant font-medium">Current Rank</span>
+</div>
+</div>
+<!-- Upcoming -->
+<div class="flex flex-col items-center">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center border-2 border-surface-container-lowest">
+<span class="material-symbols-outlined text-lg opacity-40" data-icon="lock">lock</span>
+</div>
+<div class="mt-4 text-center">
+<span class="block text-[10px] font-black editorial-text opacity-40">Level 15</span>
+<span class="text-[9px] text-on-surface-variant font-medium opacity-60">Deep Focus Badge</span>
+</div>
+</div>
+<!-- Future -->
+<div class="flex flex-col items-center">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center border-2 border-surface-container-lowest">
+<span class="material-symbols-outlined text-lg opacity-40" data-icon="workspace_premium">workspace_premium</span>
+</div>
+<div class="mt-4 text-center">
+<span class="block text-[10px] font-black editorial-text opacity-40">Level 20</span>
+<span class="text-[9px] text-on-surface-variant font-medium opacity-60">Academic Master</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Insight Section -->
+<div class="grid grid-cols-2 gap-6">
+<div class="bg-tertiary-container text-on-tertiary-container rounded-xl p-6 flex items-start gap-4">
+<div class="w-10 h-10 bg-on-tertiary-container text-tertiary-container rounded-lg flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined" data-icon="lightbulb">lightbulb</span>
+</div>
+<div>
+<h4 class="font-bold editorial-text mb-1">Optimal Focus Identified</h4>
+<p class="text-sm opacity-80 leading-relaxed">Your data shows you are most productive between <span class="font-black">8:30 AM and 10:45 AM</span>. We recommend scheduling "Mathematics" during this window to accelerate Level 09 unlocking.</p>
+</div>
+</div>
+<div class="bg-secondary-container text-on-secondary-container rounded-xl p-6 flex items-start gap-4">
+<div class="w-10 h-10 bg-on-secondary-container text-secondary-container rounded-lg flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined" data-icon="trending_up">trending_up</span>
+</div>
+<div>
+<h4 class="font-bold editorial-text mb-1">Consistency Streak Bonus</h4>
+<p class="text-sm opacity-80 leading-relaxed">You've hit a <span class="font-black">10-day streak</span> in Research Methods! A 1.5x XP multiplier is now active for all research-related tasks for the next 48 hours.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>
