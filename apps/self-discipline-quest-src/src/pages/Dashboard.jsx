@@ -10,38 +10,38 @@ export function Dashboard() {
   const [tasks, setTasks] = useState([
     {
       id: 1,
-      title: 'Research Thesis: Neural Plasticity',
+      title: '论文研究：神经可塑性',
       status: 'in-progress',
       xp: 250,
-      meta: 'High Priority',
+      meta: '高优先级',
       metaIcon: 'flag',
       timeLabel: '25:00',
       accent: 'primary',
     },
     {
       id: 2,
-      title: 'Advanced Quantum Mechanics Problem Set',
+      title: '高等量子力学习题',
       status: 'todo',
       xp: 150,
-      meta: '2:00 PM',
+      meta: '14:00',
       metaIcon: 'schedule',
       accent: 'neutral',
     },
     {
       id: 3,
-      title: 'Submit Lab Report #4',
+      title: '提交实验报告 #4',
       status: 'overdue',
       xp: 100,
-      meta: 'Due Yesterday',
+      meta: '昨日截止',
       metaIcon: 'warning',
       accent: 'error',
     },
     {
       id: 4,
-      title: 'Review Analytical Chemistry Notes',
+      title: '复习分析化学笔记',
       status: 'done',
       xp: 50,
-      meta: 'Awarded',
+      meta: '已奖励',
       metaIcon: 'check',
       accent: 'done',
     },
@@ -86,7 +86,7 @@ export function Dashboard() {
           return {
             ...task,
             status: 'todo',
-            meta: 'Reopened',
+            meta: '重新打开',
             metaIcon: 'restart_alt',
             accent: 'neutral',
           };
@@ -95,7 +95,7 @@ export function Dashboard() {
         return {
           ...task,
           status: 'done',
-          meta: 'Awarded',
+          meta: '已奖励',
           metaIcon: 'check',
           accent: 'done',
         };
@@ -114,17 +114,17 @@ export function Dashboard() {
       {/* Top Header */}
       <header className="sticky top-0 right-0 z-30 ml-64 flex items-center justify-between border-b border-gray-100 bg-white/70 px-10 py-5 backdrop-blur-xl">
         <div className="flex items-center gap-4">
-          <h2 className="text-xl font-bold text-gray-900">Focus Hub</h2>
+          <h2 className="text-xl font-bold text-gray-900">专注中枢</h2>
           <div className="mx-2 h-4 w-[1px] bg-gray-200" />
           <div className="flex gap-4">
-            <button className="text-sm font-semibold text-primary">Overview</button>
-            <button className="text-sm font-medium text-gray-400 hover:text-gray-900">Analytics</button>
+            <button className="text-sm font-semibold text-primary">总览</button>
+            <button className="text-sm font-medium text-gray-400 hover:text-gray-900">分析</button>
           </div>
         </div>
         <div className="flex items-center gap-6">
           <div className="relative flex w-72 items-center rounded-xl border border-gray-100 bg-gray-50 px-4 py-2 transition-all focus-within:border-primary/50">
             <span className="material-symbols-outlined text-lg text-gray-400">search</span>
-            <input className="ml-2 w-full border-none bg-transparent text-sm placeholder:text-gray-400 focus:ring-0" placeholder="Search tasks, docs..." type="text" />
+            <input className="ml-2 w-full border-none bg-transparent text-sm placeholder:text-gray-400 focus:ring-0" placeholder="搜索任务、资料..." type="text" />
           </div>
           <div className="flex items-center gap-4 border-l border-gray-100 pl-6">
             <button className="relative text-gray-500 hover:text-gray-900">
@@ -142,10 +142,10 @@ export function Dashboard() {
         <section className="flex-1 space-y-10">
           <header className="flex items-end justify-between">
             <div>
-              <h3 className="text-4xl font-extrabold tracking-tight text-gray-900">Today's Focus</h3>
+              <h3 className="text-4xl font-extrabold tracking-tight text-gray-900">今日专注</h3>
               <p className="mt-2 flex items-center gap-2 font-medium text-gray-500">
                 <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                4/7 tasks completed • 320 XP to next level
+                已完成 4/7 任务 • 距离下一级还差 320 XP
               </p>
             </div>
             <div className="flex gap-2">
@@ -189,7 +189,7 @@ export function Dashboard() {
                               ? 'border-primary hover:bg-primary/10'
                               : 'border-gray-200 hover:border-primary'
                       }`}
-                      title={isDone ? 'Mark as todo' : 'Mark as done'}
+                      title={isDone ? '标记为待办' : '标记为完成'}
                     >
                       {isDone ? <span className="material-symbols-outlined text-base">check</span> : <div className={`h-2.5 w-2.5 rounded-full ${isActive ? 'bg-primary' : 'bg-transparent'}`} />}
                     </button>
@@ -207,7 +207,7 @@ export function Dashboard() {
                                   : 'bg-gray-100 text-gray-500'
                           }`}
                         >
-                          {isDone ? 'Done' : isOverdue ? 'Overdue' : isActive ? 'In Progress' : 'To-do'}
+                          {isDone ? '已完成' : isOverdue ? '已逾期' : isActive ? '进行中' : '待办'}
                         </span>
                         <span className={`flex items-center gap-1 text-xs font-bold ${isOverdue ? 'text-red-500' : isDone ? 'text-gray-400' : 'text-primary'}`}>
                           <span className="material-symbols-outlined filled-icon text-sm">stars</span>
@@ -232,7 +232,7 @@ export function Dashboard() {
                     <button
                       onClick={() => removeTask(task.id)}
                       className="rounded-full p-2 text-gray-400 transition hover:bg-red-50 hover:text-red-500"
-                      title="Delete task"
+                      title="删除任务"
                     >
                       <span className="material-symbols-outlined">delete</span>
                     </button>
@@ -243,7 +243,7 @@ export function Dashboard() {
 
             {tasks.length === 0 && (
               <div className="rounded-2xl border border-dashed border-gray-200 bg-white p-8 text-center text-sm font-semibold text-gray-400">
-                No tasks left. Click Add Task to create a new challenge.
+                当前无任务，点击“添加任务”开始新的挑战。
               </div>
             )}
           </div>
@@ -252,26 +252,26 @@ export function Dashboard() {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div className="group rounded-3xl border border-gray-100 bg-white p-8 shadow-sm transition-transform hover:-translate-y-1">
               <div className="mb-6 flex items-start justify-between">
-                <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400">Deep Focus Blocks</p>
+                <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400">深度专注时长</p>
                 <span className="material-symbols-outlined text-primary/40 transition-colors group-hover:text-primary">hourglass_empty</span>
               </div>
               <div className="flex items-baseline gap-2">
                 <span className="text-5xl font-black text-gray-900">12</span>
-                <span className="font-bold text-gray-400">hrs</span>
+                <span className="font-bold text-gray-400">小时</span>
               </div>
               <div className="mt-8">
                 <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
                   <div className="progress-gradient h-full w-3/4 rounded-full shadow-[0_0_8px_rgba(234,179,8,0.3)]" />
                 </div>
                 <p className="mt-4 flex justify-between text-xs text-gray-400">
-                  <span>Current goal: 16 hrs</span>
+                  <span>当前目标：16 小时</span>
                   <span>75%</span>
                 </p>
               </div>
             </div>
             <div className="group rounded-3xl border border-gray-100 bg-white p-8 shadow-sm transition-transform hover:-translate-y-1">
               <div className="mb-6 flex items-start justify-between">
-                <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400">Task Velocity</p>
+                <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400">任务完成速率</p>
                 <span className="material-symbols-outlined text-green-500/40 transition-colors group-hover:text-green-500">trending_up</span>
               </div>
               <div className="flex items-baseline gap-2">
@@ -280,7 +280,7 @@ export function Dashboard() {
               </div>
               <div className="mt-8 flex w-fit items-center gap-2 rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-600">
                 <span className="material-symbols-outlined text-sm">arrow_upward</span>
-                5.2% from last week
+                较上周提升 5.2%
               </div>
             </div>
           </div>
@@ -294,19 +294,19 @@ export function Dashboard() {
             <div className="relative">
               <div className="mb-8 flex items-center gap-6">
                 <div className="relative">
-                  <img className="h-20 w-20 rounded-2xl object-cover ring-4 ring-yellow-50" alt="Alex Thorne" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0g116qXD8RmAHwcD3U1b7DBfUwV8kn5gCDmZL5y_URBFrjMR-eCN3mElXZTCy1pJGw8ZP6zuNasVTIvM-qWVhJ8wNc7sWZtH-_kA1nl0j61U-7z3u7TYVGQFfy6xDIOslG06_bLpbF8VURLCyJSxmnoMWMBBCDqXuU4OglX5MBnzWRBvSz2_FVU6pHlYImQeiNxFc8_9jVGlltris9w5rGcfzjA7yTESKYUqluCxAVzr5kC_Vc6uGvqbekFnWGYhuBD2KBH_UdeE" />
+                  <img className="h-20 w-20 rounded-2xl object-cover ring-4 ring-yellow-50" alt="用户头像" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0g116qXD8RmAHwcD3U1b7DBfUwV8kn5gCDmZL5y_URBFrjMR-eCN3mElXZTCy1pJGw8ZP6zuNasVTIvM-qWVhJ8wNc7sWZtH-_kA1nl0j61U-7z3u7TYVGQFfy6xDIOslG06_bLpbF8VURLCyJSxmnoMWMBBCDqXuU4OglX5MBnzWRBvSz2_FVU6pHlYImQeiNxFc8_9jVGlltris9w5rGcfzjA7yTESKYUqluCxAVzr5kC_Vc6uGvqbekFnWGYhuBD2KBH_UdeE" />
                   <div className="absolute -bottom-2 -right-2 rounded-lg border border-gray-50 bg-white p-1 shadow-md">
-                    <div className="rounded bg-primary px-2 py-0.5 text-[10px] font-black uppercase text-on-primary">Lv.14</div>
+                    <div className="rounded bg-primary px-2 py-0.5 text-[10px] font-black uppercase text-on-primary">14 级</div>
                   </div>
                 </div>
                 <div>
-                  <h5 className="text-xl font-bold text-gray-900">Alex Thorne</h5>
-                  <p className="text-sm font-medium text-gray-500">The Stoic Researcher</p>
+                  <h5 className="text-xl font-bold text-gray-900">秦逸嘉</h5>
+                  <p className="text-sm font-medium text-gray-500">游戏化人生践行者</p>
                 </div>
               </div>
               <div className="space-y-3">
                 <div className="flex justify-between text-[11px] font-bold uppercase tracking-wide text-gray-400">
-                  <span>XP Progress</span>
+                  <span>经验进度</span>
                   <span className="text-gray-900">4,680 / 5,000</span>
                 </div>
                 <div className="h-3 w-full rounded-full bg-gray-100 p-0.5">
@@ -318,7 +318,7 @@ export function Dashboard() {
 
           {/* Pomodoro Timer Widget */}
           <div className="flex flex-col items-center rounded-[2.5rem] bg-inverse-surface p-8 text-white shadow-xl shadow-gray-200">
-            <p className="mb-6 text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">Focus Timer</p>
+            <p className="mb-6 text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">专注计时器</p>
             <div className="mb-8 font-mono text-6xl font-black tracking-tighter">{formatTime(seconds)}</div>
             <div className="flex items-center gap-6">
               <button
@@ -336,13 +336,13 @@ export function Dashboard() {
                 onClick={() => switchMode('focus')}
                 className={`rounded-xl px-5 py-2 text-[11px] font-bold ${timerMode === 'focus' ? 'bg-white/10 text-primary' : 'text-gray-400 hover:text-white'}`}
               >
-                Focus
+                专注
               </button>
               <button
                 onClick={() => switchMode('break')}
                 className={`rounded-xl px-5 py-2 text-[11px] font-bold ${timerMode === 'break' ? 'bg-white/10 text-primary' : 'text-gray-400 hover:text-white'} cursor-pointer transition-colors`}
               >
-                Short Break
+                短休息
               </button>
             </div>
           </div>
@@ -350,14 +350,14 @@ export function Dashboard() {
           {/* Streak Widget */}
           <div className="rounded-[2.5rem] border border-gray-100 bg-white p-8 shadow-sm">
             <div className="mb-8 flex items-center justify-between">
-              <h6 className="text-sm font-bold text-gray-900">Weekly Consistency</h6>
+              <h6 className="text-sm font-bold text-gray-900">每周连续性</h6>
               <div className="flex items-center gap-2 text-primary">
                 <span className="material-symbols-outlined filled-icon text-2xl">local_fire_department</span>
                 <span className="text-2xl font-black">14</span>
               </div>
             </div>
             <div className="flex items-center justify-between px-1">
-              {['M', 'T', 'W', 'T', 'F'].map((d, i) => (
+              {['一', '二', '三', '四', '五'].map((d, i) => (
                 <div key={i} className="flex flex-col items-center gap-3">
                   <span className="text-[10px] font-bold text-gray-400">{d}</span>
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-container text-primary">
@@ -366,13 +366,13 @@ export function Dashboard() {
                 </div>
               ))}
               <div className="flex flex-col items-center gap-3">
-                <span className="text-[10px] font-bold text-gray-400">S</span>
+                <span className="text-[10px] font-bold text-gray-400">六</span>
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-white ring-4 ring-yellow-100">
                   <span className="material-symbols-outlined filled-icon text-lg">local_fire_department</span>
                 </div>
               </div>
               <div className="flex flex-col items-center gap-3 opacity-30">
-                <span className="text-[10px] font-bold text-gray-400">S</span>
+                <span className="text-[10px] font-bold text-gray-400">日</span>
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-100 text-gray-400">
                   <span className="material-symbols-outlined text-lg">local_fire_department</span>
                 </div>
@@ -386,8 +386,8 @@ export function Dashboard() {
               <span className="material-symbols-outlined text-2xl text-on-primary">auto_awesome</span>
             </div>
             <div className="flex-1">
-              <p className="text-[10px] font-black uppercase tracking-wider text-on-primary/60">Next Unlock</p>
-              <p className="font-bold text-on-primary">Zen Mode Visualization</p>
+              <p className="text-[10px] font-black uppercase tracking-wider text-on-primary/60">下一解锁</p>
+              <p className="font-bold text-on-primary">禅定可视化模式</p>
             </div>
             <span className="material-symbols-outlined text-on-primary">chevron_right</span>
           </div>

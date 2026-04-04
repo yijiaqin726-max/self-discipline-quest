@@ -25,7 +25,7 @@ export function Sidebar({ active = 'dashboard', onChange }) {
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-full w-64 flex-col border-r border-gray-100 bg-white p-4">
       <div className="mb-8 px-4">
-        <h1 className="text-lg font-black tracking-tight text-zinc-900">自律学者</h1>
+        <h1 className="text-lg font-black tracking-tight text-zinc-900">游戏化人生</h1>
         <div className="mt-2 flex items-center gap-2">
           <img
             className="h-8 w-8 rounded-full border-2 border-primary-container object-cover"
