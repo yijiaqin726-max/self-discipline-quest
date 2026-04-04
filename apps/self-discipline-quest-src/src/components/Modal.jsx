@@ -1,7 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { AppActions } from '../stores/appStore';
 
 export function TaskModal({ open, onClose, onCreate, initial = {} }) {
+  const [title, setTitle] = useState(initial.title || '');
+  const [xp, setXp] = useState(initial.xp || 250);
+  const [priority, setPriority] = useState(initial.priority || 'medium');
+
   if (!open) return null;
+
+  const handleSubmit = () => {
+    if (!title.trim()) return;
+    const newTask = AppActions.addTask({
+      title: title.trim(),
+      xp: Number(xp) || 100,
+      priority,
+      category: '通用',
+      dueDate: new Date().toISOString().split('T')[0],
+    });
+    setTitle('');
+    setXp(250);
+    setPriority('medium');
+    if (onCreate) onCreate(newTask);
+    else onClose();
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-inverse-surface/10 p-4 backdrop-blur-md">
@@ -20,7 +41,7 @@ export function TaskModal({ open, onClose, onCreate, initial = {} }) {
           <div className="flex flex-col gap-8">
             <section className="flex flex-col gap-2">
               <label className="px-1 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">任务标题</label>
-              <input className="w-full border-none bg-transparent p-0 text-xl font-bold text-on-surface placeholder:text-surface-container-highest focus:ring-0" defaultValue={initial.title || ''} placeholder="你现在要完成什么？" />
+              <input className="w-full border-none bg-transparent p-0 text-xl font-bold text-on-surface placeholder:text-surface-container-highest focus:ring-0" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="你现在要完成什么？" />
               <div className="h-0.5 w-full overflow-hidden rounded-full bg-surface-container-high">
                 <div className="h-full w-1/3 bg-primary-container" />
               </div>
@@ -39,7 +60,7 @@ export function TaskModal({ open, onClose, onCreate, initial = {} }) {
               <section className="flex flex-col gap-2">
                 <label className="px-1 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">经验奖励</label>
                 <div className="relative">
-                  <input type="number" min="0" defaultValue={initial.xp || 250} className="w-full rounded-xl border-2 border-transparent bg-surface-container-low px-4 py-3 font-black text-on-surface-variant transition-all focus:border-primary-container focus:ring-0" />
+                  <input type="number" min="0" value={xp} onChange={(e) => setXp(e.target.value)} className="w-full rounded-xl border-2 border-transparent bg-surface-container-low px-4 py-3 font-black text-on-surface-variant transition-all focus:border-primary-container focus:ring-0" />
                   <div className="absolute right-4 top-1/2 flex -translate-y-1/2 items-center gap-1.5 rounded-full bg-primary-container px-3 py-1 text-[10px] font-black">
                     <span className="material-symbols-outlined text-[14px]">workspace_premium</span>
                     + 经验
@@ -51,9 +72,9 @@ export function TaskModal({ open, onClose, onCreate, initial = {} }) {
             <section className="flex flex-col gap-3">
               <label className="px-1 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">优先级</label>
               <div className="grid grid-cols-3 gap-3 rounded-2xl bg-surface-container p-1.5">
-                <button className="rounded-xl px-4 py-2.5 text-sm font-bold text-on-surface-variant transition-all hover:bg-surface-container-high">低</button>
-                <button className="rounded-xl bg-surface-container-lowest px-4 py-2.5 text-sm font-bold text-on-surface shadow-sm ring-1 ring-black/5 transition-all">中</button>
-                <button className="rounded-xl px-4 py-2.5 text-sm font-bold text-on-surface-variant transition-all hover:bg-surface-container-high">高</button>
+                <button onClick={() => setPriority('low')} className={`rounded-xl px-4 py-2.5 text-sm font-bold transition-all ${priority === 'low' ? 'bg-surface-container-lowest text-on-surface shadow-sm ring-1 ring-black/5' : 'text-on-surface-variant hover:bg-surface-container-high'}`}>低</button>
+                <button onClick={() => setPriority('medium')} className={`rounded-xl px-4 py-2.5 text-sm font-bold transition-all ${priority === 'medium' ? 'bg-surface-container-lowest text-on-surface shadow-sm ring-1 ring-black/5' : 'text-on-surface-variant hover:bg-surface-container-high'}`}>中</button>
+                <button onClick={() => setPriority('high')} className={`rounded-xl px-4 py-2.5 text-sm font-bold transition-all ${priority === 'high' ? 'bg-surface-container-lowest text-on-surface shadow-sm ring-1 ring-black/5' : 'text-on-surface-variant hover:bg-surface-container-high'}`}>高</button>
               </div>
             </section>
 
@@ -100,7 +121,7 @@ export function TaskModal({ open, onClose, onCreate, initial = {} }) {
           <button onClick={onClose} className="flex-1 rounded-full bg-surface-container-high py-4 text-sm font-black tracking-wide text-on-surface transition-all active:scale-95 hover:bg-surface-container-highest">
             放弃创建
           </button>
-          <button onClick={onCreate} className="group flex-[2] rounded-full bg-gradient-to-br from-primary to-primary-container py-4 text-sm font-black tracking-wide text-on-primary-container shadow-[0_10px_20px_rgba(106,91,0,0.15)] transition-all active:scale-95 hover:shadow-[0_15px_30px_rgba(106,91,0,0.2)]">
+          <button onClick={handleSubmit} className="group flex-[2] rounded-full bg-gradient-to-br from-primary to-primary-container py-4 text-sm font-black tracking-wide text-on-primary-container shadow-[0_10px_20px_rgba(106,91,0,0.15)] transition-all active:scale-95 hover:shadow-[0_15px_30px_rgba(106,91,0,0.2)]">
             <span className="flex items-center justify-center gap-2">
               <span className="material-symbols-outlined text-[20px]">bolt</span>
               创建任务

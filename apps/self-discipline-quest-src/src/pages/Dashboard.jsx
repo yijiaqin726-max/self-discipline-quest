@@ -1,51 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Sidebar } from '../components/Sidebar';
 import { TaskModal } from '../components/Modal';
+import { useStore, AppActions, getTaskStats } from '../stores/appStore';
 
 export function Dashboard() {
   const [modalOpen, setModalOpen] = useState(false);
   const [timerRunning, setTimerRunning] = useState(false);
-  const [seconds, setSeconds] = useState(25 * 60);
   const [timerMode, setTimerMode] = useState('focus'); // 'focus' | 'break'
-  const [tasks, setTasks] = useState([
-    {
-      id: 1,
-      title: '论文研究：神经可塑性',
-      status: 'in-progress',
-      xp: 250,
-      meta: '高优先级',
-      metaIcon: 'flag',
-      timeLabel: '25:00',
-      accent: 'primary',
-    },
-    {
-      id: 2,
-      title: '高等量子力学习题',
-      status: 'todo',
-      xp: 150,
-      meta: '14:00',
-      metaIcon: 'schedule',
-      accent: 'neutral',
-    },
-    {
-      id: 3,
-      title: '提交实验报告 #4',
-      status: 'overdue',
-      xp: 100,
-      meta: '昨日截止',
-      metaIcon: 'warning',
-      accent: 'error',
-    },
-    {
-      id: 4,
-      title: '复习分析化学笔记',
-      status: 'done',
-      xp: 50,
-      meta: '已奖励',
-      metaIcon: 'check',
-      accent: 'done',
-    },
-  ]);
+  const tasks = useStore((s) => s.tasks);
+  const profile = useStore((s) => s.userProfile);
+  const dailyStats = useStore((s) => s.dailyStats);
+  const settings = useStore((s) => s.settings);
+  const [seconds, setSeconds] = useState((settings?.focusDuration || 25) * 60);
   const intervalRef = useRef(null);
 
   useEffect(() => {
@@ -53,9 +19,23 @@ export function Dashboard() {
       intervalRef.current = setInterval(() => setSeconds((s) => s - 1), 1000);
     } else {
       clearInterval(intervalRef.current);
+      // 计时结束时奖励XP
+      if (timerRunning && seconds === 0 && timerMode === 'focus') {
+        AppActions.addXp(50);
+        AppActions.updateDailyStats({
+          focusHours: (dailyStats?.focusHours || 0) + (settings?.focusDuration || 25) / 60,
+        });
+        setTimerRunning(false);
+        setSeconds((settings?.breakDuration || 5) * 60);
+        setTimerMode('break');
+      }
     }
     return () => clearInterval(intervalRef.current);
   }, [timerRunning, seconds]);
+
+  const stats = getTaskStats(tasks || []);
+  const xpToNext = 5000 - ((profile?.totalXp || 0) % 5000);
+  const xpProgress = Math.round(((profile?.totalXp || 0) % 5000) / 50);
 
   const formatTime = (s) => {
     const m = Math.floor(s / 60);
@@ -65,47 +45,21 @@ export function Dashboard() {
 
   const resetTimer = () => {
     setTimerRunning(false);
-    setSeconds(timerMode === 'focus' ? 25 * 60 : 5 * 60);
+    setSeconds(timerMode === 'focus' ? (settings?.focusDuration || 25) * 60 : (settings?.breakDuration || 5) * 60);
   };
 
   const switchMode = (mode) => {
     setTimerMode(mode);
     setTimerRunning(false);
-    setSeconds(mode === 'focus' ? 25 * 60 : 5 * 60);
+    setSeconds(mode === 'focus' ? (settings?.focusDuration || 25) * 60 : (settings?.breakDuration || 5) * 60);
   };
 
   const handleSidebarChange = (key) => {
     if (key === 'add-task') setModalOpen(true);
   };
 
-  const toggleTaskDone = (id) => {
-    setTasks((prev) =>
-      prev.map((task) => {
-        if (task.id !== id) return task;
-        if (task.status === 'done') {
-          return {
-            ...task,
-            status: 'todo',
-            meta: '重新打开',
-            metaIcon: 'restart_alt',
-            accent: 'neutral',
-          };
-        }
-
-        return {
-          ...task,
-          status: 'done',
-          meta: '已奖励',
-          metaIcon: 'check',
-          accent: 'done',
-        };
-      }),
-    );
-  };
-
-  const removeTask = (id) => {
-    setTasks((prev) => prev.filter((task) => task.id !== id));
-  };
+  const getPriorityLabel = (p) => (p === 'high' ? '高优先级' : p === 'medium' ? '中优先级' : '低优先级');
+  const getPriorityIcon = (p) => (p === 'high' ? 'flag' : p === 'medium' ? 'schedule' : 'low_priority');
 
   return (
     <div className="min-h-screen bg-background text-on-surface">
@@ -145,7 +99,7 @@ export function Dashboard() {
               <h3 className="text-4xl font-extrabold tracking-tight text-gray-900">今日专注</h3>
               <p className="mt-2 flex items-center gap-2 font-medium text-gray-500">
                 <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                已完成 4/7 任务 • 距离下一级还差 320 XP
+                已完成 {stats.done}/{stats.total} 任务 • 距离下一级还差 {xpToNext} XP
               </p>
             </div>
             <div className="flex gap-2">
@@ -159,7 +113,7 @@ export function Dashboard() {
           </header>
 
           <div className="grid gap-4">
-            {tasks.map((task) => {
+            {(tasks || []).map((task) => {
               const isDone = task.status === 'done';
               const isActive = task.status === 'in-progress';
               const isOverdue = task.status === 'overdue';
@@ -179,7 +133,7 @@ export function Dashboard() {
                 >
                   <div className="flex items-center gap-5">
                     <button
-                      onClick={() => toggleTaskDone(task.id)}
+                      onClick={() => AppActions.toggleTaskDone(task.id)}
                       className={`flex h-6 w-6 items-center justify-center rounded-full border-2 transition-colors ${
                         isDone
                           ? 'border-green-500 bg-green-500 text-white'
@@ -214,23 +168,27 @@ export function Dashboard() {
                           +{task.xp} XP
                         </span>
                         <span className={`flex items-center gap-1 text-xs ${isOverdue ? 'font-medium text-red-400' : isDone ? 'text-gray-400' : 'text-gray-400'}`}>
-                          <span className="material-symbols-outlined text-sm">{task.metaIcon}</span>
-                          {task.meta}
+                          <span className="material-symbols-outlined text-sm">{getPriorityIcon(task.priority)}</span>
+                          {getPriorityLabel(task.priority)}
                         </span>
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     {isActive && (
-                      <>
-                        <div className="rounded-xl border border-gray-100 bg-gray-50 px-4 py-1.5 font-mono text-sm font-semibold text-gray-600">{task.timeLabel}</div>
-                        <button className="rounded-full p-2 text-primary transition-colors hover:bg-primary/10">
-                          <span className="material-symbols-outlined filled-icon text-3xl">play_circle</span>
-                        </button>
-                      </>
+                      <button
+                        onClick={() => {
+                          setTimerMode('focus');
+                          setSeconds((settings?.focusDuration || 25) * 60);
+                          setTimerRunning(true);
+                        }}
+                        className="rounded-full p-2 text-primary transition-colors hover:bg-primary/10"
+                      >
+                        <span className="material-symbols-outlined filled-icon text-3xl">play_circle</span>
+                      </button>
                     )}
                     <button
-                      onClick={() => removeTask(task.id)}
+                      onClick={() => AppActions.deleteTask(task.id)}
                       className="rounded-full p-2 text-gray-400 transition hover:bg-red-50 hover:text-red-500"
                       title="删除任务"
                     >
@@ -256,16 +214,16 @@ export function Dashboard() {
                 <span className="material-symbols-outlined text-primary/40 transition-colors group-hover:text-primary">hourglass_empty</span>
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-5xl font-black text-gray-900">12</span>
+                <span className="text-5xl font-black text-gray-900">{Math.round(dailyStats?.focusHours || 0)}</span>
                 <span className="font-bold text-gray-400">小时</span>
               </div>
               <div className="mt-8">
                 <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
-                  <div className="progress-gradient h-full w-3/4 rounded-full shadow-[0_0_8px_rgba(234,179,8,0.3)]" />
+                  <div className="progress-gradient h-full rounded-full shadow-[0_0_8px_rgba(234,179,8,0.3)]" style={{ width: `${Math.min(100, Math.round(((dailyStats?.focusHours || 0) / (dailyStats?.focusTarget || 16)) * 100))}%` }} />
                 </div>
                 <p className="mt-4 flex justify-between text-xs text-gray-400">
-                  <span>当前目标：16 小时</span>
-                  <span>75%</span>
+                  <span>当前目标：{dailyStats?.focusTarget || 16} 小时</span>
+                  <span>{Math.min(100, Math.round(((dailyStats?.focusHours || 0) / (dailyStats?.focusTarget || 16)) * 100))}%</span>
                 </p>
               </div>
             </div>
@@ -275,7 +233,7 @@ export function Dashboard() {
                 <span className="material-symbols-outlined text-green-500/40 transition-colors group-hover:text-green-500">trending_up</span>
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-5xl font-black text-gray-900">94</span>
+                <span className="text-5xl font-black text-gray-900">{stats.rate}</span>
                 <span className="font-bold text-gray-400">%</span>
               </div>
               <div className="mt-8 flex w-fit items-center gap-2 rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-600">
@@ -296,21 +254,21 @@ export function Dashboard() {
                 <div className="relative">
                   <div className="h-20 w-20 rounded-2xl bg-black ring-4 ring-yellow-50" />
                   <div className="absolute -bottom-2 -right-2 rounded-lg border border-gray-50 bg-white p-1 shadow-md">
-                    <div className="rounded bg-primary px-2 py-0.5 text-[10px] font-black uppercase text-on-primary">14 级</div>
+                    <div className="rounded bg-primary px-2 py-0.5 text-[10px] font-black uppercase text-on-primary">{profile?.level || 14} 级</div>
                   </div>
                 </div>
                 <div>
-                  <h5 className="text-xl font-bold text-gray-900">秦逸嘉</h5>
-                  <p className="text-sm font-medium text-gray-500">游戏化人生践行者</p>
+                  <h5 className="text-xl font-bold text-gray-900">{profile?.name || '秦逸嘉'}</h5>
+                  <p className="text-sm font-medium text-gray-500">{profile?.status || '游戏化人生践行者'}</p>
                 </div>
               </div>
               <div className="space-y-3">
                 <div className="flex justify-between text-[11px] font-bold uppercase tracking-wide text-gray-400">
                   <span>经验进度</span>
-                  <span className="text-gray-900">4,680 / 5,000</span>
+                  <span className="text-gray-900">{(profile?.totalXp || 0).toLocaleString()} / {(Math.ceil((profile?.totalXp || 0) / 5000) * 5000).toLocaleString()}</span>
                 </div>
                 <div className="h-3 w-full rounded-full bg-gray-100 p-0.5">
-                  <div className="progress-gradient h-full w-[92%] rounded-full shadow-[0_0_12px_rgba(234,179,8,0.4)]" />
+                  <div className="progress-gradient h-full rounded-full shadow-[0_0_12px_rgba(234,179,8,0.4)]" style={{ width: `${xpProgress}%` }} />
                 </div>
               </div>
             </div>
@@ -353,7 +311,7 @@ export function Dashboard() {
               <h6 className="text-sm font-bold text-gray-900">每周连续性</h6>
               <div className="flex items-center gap-2 text-primary">
                 <span className="material-symbols-outlined filled-icon text-2xl">local_fire_department</span>
-                <span className="text-2xl font-black">14</span>
+                <span className="text-2xl font-black">{dailyStats?.streak || 0}</span>
               </div>
             </div>
             <div className="flex items-center justify-between px-1">

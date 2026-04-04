@@ -1,4 +1,5 @@
 // 使用纯JavaScript进行全局状态管理，不依赖外部库
+import { useState, useEffect } from 'react';
 
 const STORAGE_KEY = 'app_state';
 
@@ -187,3 +188,38 @@ export const AppActions = {
     store.setState(defaultState);
   },
 };
+
+// React hook：订阅全局状态变化，自动触发重新渲染
+export function useStore(selector) {
+  const store = useAppStore();
+  const [state, setState] = useState(() => {
+    const s = store.getState();
+    return selector ? selector(s) : s;
+  });
+
+  useEffect(() => {
+    const unsubscribe = store.subscribe((newState) => {
+      const next = selector ? selector(newState) : newState;
+      setState(next);
+    });
+    // 同步一次当前最新值
+    const current = store.getState();
+    setState(selector ? selector(current) : current);
+    return unsubscribe;
+  }, []);
+
+  return state;
+}
+
+// 计算辅助函数
+export function getTaskStats(tasks) {
+  const total = tasks.length;
+  const done = tasks.filter((t) => t.status === 'done').length;
+  const inProgress = tasks.filter((t) => t.status === 'in-progress').length;
+  const overdue = tasks.filter((t) => t.status === 'overdue').length;
+  const todo = tasks.filter((t) => t.status === 'todo').length;
+  const totalXp = tasks.reduce((sum, t) => sum + (t.xp || 0), 0);
+  const earnedXp = tasks.filter((t) => t.status === 'done').reduce((sum, t) => sum + (t.xp || 0), 0);
+  const rate = total > 0 ? Math.round((done / total) * 100) : 0;
+  return { total, done, inProgress, overdue, todo, totalXp, earnedXp, rate };
+}

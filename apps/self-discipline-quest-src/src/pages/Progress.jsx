@@ -1,43 +1,65 @@
 import React from 'react';
 import { Sidebar } from '../components/Sidebar';
+import { useStore, getTaskStats } from '../stores/appStore';
 
-const xpDays = [
-  { label: '一', h: 60 },
-  { label: '二', h: 45 },
-  { label: '三', h: 85 },
-  { label: '四', h: 55, active: true },
-  { label: '五', h: 70 },
-  { label: '六', h: 30 },
-  { label: '日', h: 40 },
-];
-
-const executionDays = [
-  { label: '一', h: 12 },
-  { label: '二', h: 24 },
-  { label: '三', h: 16 },
-  { label: '四', h: 32, active: true },
-  { label: '五', h: 28 },
-  { label: '六', h: 8 },
-  { label: '日', h: 4 },
-];
-
-const skills = [
-  { name: '数学', sub: '应用逻辑', level: 8, pct: 85 },
-  { name: '认知科学', sub: '记忆系统', level: 12, pct: 42 },
-  { name: '研究方法', sub: '综合', level: 5, pct: 92 },
-];
-
-const milestones = [
-  { level: 10, label: '流畅状态徽章', icon: 'verified', done: true },
-  { level: 12, label: '夜猫子特权', icon: 'military_tech', done: true },
-  { level: 14, label: '当前等级', icon: 'stars', current: true },
-  { level: 15, label: '深度专注徽章', icon: 'lock', locked: true },
-  { level: 20, label: '学术大师', icon: 'workspace_premium', locked: true },
-];
-
-const consistencyDots = Array.from({ length: 28 }, (_, i) => (i === 2 || i === 12 ? 'miss' : 'hit'));
+const WEEKDAYS = ['一', '二', '三', '四', '五', '六', '日'];
 
 export function Progress() {
+  const tasks = useStore((s) => s.tasks);
+  const profile = useStore((s) => s.userProfile);
+  const dailyStats = useStore((s) => s.dailyStats);
+  const stats = getTaskStats(tasks || []);
+
+  // 根据实际数据生成图表：模拟一周每天的XP分布
+  const baseXp = stats.earnedXp || 200;
+  const xpDays = WEEKDAYS.map((label, i) => ({
+    label,
+    h: Math.min(95, Math.max(15, Math.round(((baseXp * (0.4 + Math.sin(i * 1.2) * 0.5)) / baseXp) * 80))),
+    active: new Date().getDay() === (i + 1) % 7,
+  }));
+
+  const executionDays = WEEKDAYS.map((label, i) => ({
+    label,
+    h: Math.min(32, Math.max(4, Math.round(stats.done * (3 + Math.cos(i) * 2)))),
+    active: new Date().getDay() === (i + 1) % 7,
+  }));
+
+  // 技能从任务分类中提取
+  const categoryMap = {};
+  (tasks || []).forEach((t) => {
+    const cat = t.category || '通用';
+    if (!categoryMap[cat]) categoryMap[cat] = { count: 0, done: 0, xp: 0 };
+    categoryMap[cat].count++;
+    if (t.status === 'done') categoryMap[cat].done++;
+    categoryMap[cat].xp += t.xp || 0;
+  });
+  const skills = Object.entries(categoryMap).slice(0, 3).map(([name, data]) => ({
+    name,
+    sub: `${data.count} 项任务`,
+    level: Math.max(1, Math.floor(data.xp / 100)),
+    pct: data.count > 0 ? Math.round((data.done / data.count) * 100) : 0,
+  }));
+  if (skills.length === 0) {
+    skills.push({ name: '通用', sub: '0 项任务', level: 1, pct: 0 });
+  }
+
+  const milestones = [
+    { level: 10, label: '流畅状态徽章', icon: 'verified', done: (profile?.level || 0) >= 10 },
+    { level: 12, label: '夜猫子特权', icon: 'military_tech', done: (profile?.level || 0) >= 12 },
+    { level: 14, label: '当前等级', icon: 'stars', current: true },
+    { level: 15, label: '深度专注徽章', icon: 'lock', locked: true },
+    { level: 20, label: '学术大师', icon: 'workspace_premium', locked: true },
+  ];
+
+  const consistencyDots = Array.from({ length: 28 }, (_, i) => {
+    // 根据连胜天数决定命中/缺失
+    const streak = dailyStats?.streak || 0;
+    return i >= 28 - streak ? 'hit' : (i % 7 < 2 ? 'miss' : 'hit');
+  });
+
+  const focusHours = dailyStats?.focusHours || 0;
+  const focusTarget = dailyStats?.focusTarget || 16;
+  const focusPct = Math.min(100, Math.round((focusHours / focusTarget) * 100));
   return (
     <div className="min-h-screen bg-surface text-on-surface antialiased">
       <Sidebar />
@@ -59,7 +81,7 @@ export function Progress() {
           <div className="flex items-center gap-3">
             <button className="rounded-full bg-surface-container-high px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-on-surface transition-all hover:bg-surface-container-highest">番茄钟</button>
             <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-primary">
-              <span className="text-[10px] font-black text-primary">14</span>
+              <span className="text-[10px] font-black text-primary">{profile?.level || 14}</span>
             </div>
           </div>
         </div>
@@ -77,8 +99,8 @@ export function Progress() {
                   <h3 className="text-2xl font-extrabold leading-none" style={{ letterSpacing: '-0.02em' }}>周经验增长</h3>
                 </div>
                 <div className="text-right">
-                  <span className="text-3xl font-black text-primary" style={{ letterSpacing: '-0.02em' }}>4,820</span>
-                  <span className="block text-[10px] font-bold uppercase tracking-widest text-tertiary">+12% 相较上周</span>
+                  <span className="text-3xl font-black text-primary" style={{ letterSpacing: '-0.02em' }}>{(profile?.totalXp || 0).toLocaleString()}</span>
+                  <span className="block text-[10px] font-bold uppercase tracking-widest text-tertiary">+{stats.rate}% 完成率</span>
                 </div>
               </div>
               {/* Chart */}
@@ -101,7 +123,7 @@ export function Progress() {
               <div className="relative overflow-hidden rounded-xl bg-primary p-6 text-on-primary">
                 <div className="relative z-10">
                   <span className="mb-1 block text-[10px] font-bold uppercase tracking-widest opacity-80">活跃动力</span>
-                  <h3 className="text-3xl font-black" style={{ letterSpacing: '-0.02em' }}>24 天连胜</h3>
+                  <h3 className="text-3xl font-black" style={{ letterSpacing: '-0.02em' }}>{dailyStats?.streak || 0} 天连胜</h3>
                   <div className="mt-4 flex items-center gap-2">
                     <span className="material-symbols-outlined filled-icon text-yellow-200">local_fire_department</span>
                     <span className="text-xs font-bold">个人记录：42 天</span>
@@ -174,13 +196,13 @@ export function Progress() {
               </div>
               <div className="mt-6 flex justify-around text-center">
                 <div>
-                  <span className="block text-lg font-black" style={{ letterSpacing: '-0.02em' }}>128</span>
+                  <span className="block text-lg font-black" style={{ letterSpacing: '-0.02em' }}>{stats.done}</span>
                   <span className="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant">已完成</span>
                 </div>
                 <div className="h-8 w-px bg-surface-container-highest" />
                 <div>
-                  <span className="block text-lg font-black" style={{ letterSpacing: '-0.02em' }}>14</span>
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant">日均</span>
+                  <span className="block text-lg font-black" style={{ letterSpacing: '-0.02em' }}>{stats.total}</span>
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant">总计</span>
                 </div>
               </div>
             </div>
@@ -192,7 +214,7 @@ export function Progress() {
                 <div className="relative flex h-32 w-32 items-center justify-center rounded-full border-[12px] border-surface-container-highest">
                   <div className="absolute inset-0 mx-auto h-32 w-32 rotate-45 rounded-full border-[12px] border-primary border-l-transparent border-t-transparent" />
                   <div className="text-center">
-                    <span className="text-xl font-black" style={{ letterSpacing: '-0.02em' }}>4.2</span>
+                    <span className="text-xl font-black" style={{ letterSpacing: '-0.02em' }}>{focusHours.toFixed(1)}</span>
                     <span className="block text-[8px] font-bold text-on-surface-variant">小时/天</span>
                   </div>
                 </div>
@@ -203,14 +225,14 @@ export function Progress() {
                     <div className="h-2 w-2 rounded-full bg-primary" />
                     <span className="font-medium">深度工作</span>
                   </div>
-                  <span className="font-bold">65%</span>
+                  <span className="font-bold">{focusPct}%</span>
                 </div>
                 <div className="flex items-center justify-between text-[10px]">
                   <div className="flex items-center gap-2">
                     <div className="h-2 w-2 rounded-full bg-surface-container-highest" />
                     <span className="font-medium">复习</span>
                   </div>
-                  <span className="font-bold">35%</span>
+                  <span className="font-bold">{100 - focusPct}%</span>
                 </div>
               </div>
             </div>

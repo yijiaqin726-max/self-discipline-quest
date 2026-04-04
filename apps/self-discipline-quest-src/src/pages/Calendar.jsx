@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Sidebar } from '../components/Sidebar';
 import { TaskModal } from '../components/Modal';
+import { useStore, AppActions } from '../stores/appStore';
 
 const DAYS_HEADER = ['日', '一', '二', '三', '四', '五', '六'];
 
@@ -22,33 +23,26 @@ export function Calendar() {
   const [sessionRunning, setSessionRunning] = useState(false);
   const [focusMode, setFocusMode] = useState('免打扰');
   const [noticeCount, setNoticeCount] = useState(1);
-  const [dailyTasks, setDailyTasks] = useState([
-    {
-      id: 1,
-      time: '11:00 — 11:45',
-      title: '给导师发送修改说明邮件',
-      subtitle: '个人推进',
-      xp: 50,
-      done: false,
-      kind: 'task',
-    },
-    {
-      id: 2,
-      time: '当日截止',
-      title: '项目提案提交',
-      subtitle: '高优先级',
-      xp: 1000,
-      done: false,
-      kind: 'deadline',
-    },
-  ]);
+  const tasks = useStore((s) => s.tasks);
+  const dailyStats = useStore((s) => s.dailyStats);
+
+  // 从全局任务中筛选可在日程中显示的任务
+  const dailyTasks = (tasks || []).map((t) => ({
+    id: t.id,
+    time: t.status === 'overdue' ? '已逾期' : t.dueDate || '今日',
+    title: t.title,
+    subtitle: t.priority === 'high' ? '高优先级' : t.category || '任务',
+    xp: t.xp || 0,
+    done: t.status === 'done',
+    kind: t.status === 'overdue' ? 'deadline' : 'task',
+  }));
 
   const toggleTask = (id) => {
-    setDailyTasks((prev) => prev.map((task) => (task.id === id ? { ...task, done: !task.done } : task)));
+    AppActions.toggleTaskDone(id);
   };
 
   const deleteTask = (id) => {
-    setDailyTasks((prev) => prev.filter((task) => task.id !== id));
+    AppActions.deleteTask(id);
   };
 
   const prevMonth = () => {
@@ -59,19 +53,10 @@ export function Calendar() {
     setMonthIndex((prev) => (prev + 1) % monthOptions.length);
   };
 
-  const handleCreateTask = () => {
-    setDailyTasks((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        time: '19:30 — 20:00',
-        title: '新建任务（可编辑）',
-        subtitle: '快速添加',
-        xp: 80,
-        done: false,
-        kind: 'task',
-      },
-    ]);
+  const handleCreateTask = (taskData) => {
+    if (taskData) {
+      AppActions.addTask(taskData);
+    }
     setModalOpen(false);
   };
 
@@ -193,11 +178,11 @@ export function Calendar() {
                   </div>
                   <div>
                     <h4 className="font-bold text-gray-900">本周经验值预测</h4>
-                    <p className="text-sm text-gray-500">按计划完成所有专注时段可获得 1,200 XP</p>
+                    <p className="text-sm text-gray-500">按计划完成所有专注时段可获得 {(tasks || []).reduce((sum, t) => sum + (t.xp || 0), 0).toLocaleString()} XP</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <span className="text-2xl font-black italic text-primary">+1.2k</span>
+                  <span className="text-2xl font-black italic text-primary">+{((tasks || []).reduce((sum, t) => sum + (t.xp || 0), 0) / 1000).toFixed(1)}k</span>
                 </div>
               </div>
             </section>
