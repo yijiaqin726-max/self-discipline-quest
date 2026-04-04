@@ -2,37 +2,37 @@ import React from 'react';
 import { Sidebar } from '../components/Sidebar';
 
 const xpDays = [
-  { label: 'MON', h: 60 },
-  { label: 'TUE', h: 45 },
-  { label: 'WED', h: 85 },
-  { label: 'THU', h: 55, active: true },
-  { label: 'FRI', h: 70 },
-  { label: 'SAT', h: 30 },
-  { label: 'SUN', h: 40 },
+  { label: '一', h: 60 },
+  { label: '二', h: 45 },
+  { label: '三', h: 85 },
+  { label: '四', h: 55, active: true },
+  { label: '五', h: 70 },
+  { label: '六', h: 30 },
+  { label: '日', h: 40 },
 ];
 
 const executionDays = [
-  { label: 'M', h: 12 },
-  { label: 'T', h: 24 },
-  { label: 'W', h: 16 },
-  { label: 'T', h: 32, active: true },
-  { label: 'F', h: 28 },
-  { label: 'S', h: 8 },
-  { label: 'S', h: 4 },
+  { label: '一', h: 12 },
+  { label: '二', h: 24 },
+  { label: '三', h: 16 },
+  { label: '四', h: 32, active: true },
+  { label: '五', h: 28 },
+  { label: '六', h: 8 },
+  { label: '日', h: 4 },
 ];
 
 const skills = [
-  { name: 'Mathematics', sub: 'Applied Logic', level: 8, pct: 85 },
-  { name: 'Cognitive Science', sub: 'Memory Systems', level: 12, pct: 42 },
-  { name: 'Research Methods', sub: 'Synthesis', level: 5, pct: 92 },
+  { name: '数学', sub: '应用逻辑', level: 8, pct: 85 },
+  { name: '认知科学', sub: '记忆系统', level: 12, pct: 42 },
+  { name: '研究方法', sub: '综合', level: 5, pct: 92 },
 ];
 
 const milestones = [
-  { level: 10, label: 'Flow State Badge', icon: 'verified', done: true },
-  { level: 12, label: 'Night Owl Perk', icon: 'military_tech', done: true },
-  { level: 14, label: 'Current Rank', icon: 'stars', current: true },
-  { level: 15, label: 'Deep Focus Badge', icon: 'lock', locked: true },
-  { level: 20, label: 'Academic Master', icon: 'workspace_premium', locked: true },
+  { level: 10, label: '流畅状态徽章', icon: 'verified', done: true },
+  { level: 12, label: '夜猫子特权', icon: 'military_tech', done: true },
+  { level: 14, label: '当前等级', icon: 'stars', current: true },
+  { level: 15, label: '深度专注徽章', icon: 'lock', locked: true },
+  { level: 20, label: '学术大师', icon: 'workspace_premium', locked: true },
 ];
 
 const consistencyDots = Array.from({ length: 28 }, (_, i) => (i === 2 || i === 12 ? 'miss' : 'hit'));
@@ -45,10 +45,10 @@ export function Progress() {
       {/* Top Header */}
       <header className="sticky top-0 right-0 z-30 ml-64 flex items-center justify-between border-b border-gray-100 bg-white/80 px-8 py-3 backdrop-blur-md">
         <div className="flex items-center gap-8">
-          <h2 className="text-xl font-bold text-gray-900" style={{ letterSpacing: '-0.02em' }}>Progress Insights</h2>
+          <h2 className="text-xl font-bold text-gray-900" style={{ letterSpacing: '-0.02em' }}>进度洞察</h2>
           <nav className="hidden gap-6 md:flex">
-            <a className="text-sm font-medium text-gray-500 transition-all hover:text-gray-900" href="#">Tasks</a>
-            <a className="text-sm font-medium text-gray-500 transition-all hover:text-gray-900" href="#">Focus</a>
+            <a className="text-sm font-medium text-gray-500 transition-all hover:text-gray-900" href="#">任务</a>
+            <a className="text-sm font-medium text-gray-500 transition-all hover:text-gray-900" href="#">专注</a>
           </nav>
         </div>
         <div className="flex items-center gap-6">
