@@ -53,7 +53,7 @@ export function Progress() {
         </div>
         <div className="flex items-center gap-6">
           <div className="relative w-64">
-            <input className="w-full rounded-full border-none bg-surface-container-low px-10 py-1.5 text-sm focus:ring-2 focus:ring-primary/20" placeholder="Search insights..." type="text" />
+            <input className="w-full rounded-full border-none bg-surface-container-low px-10 py-1.5 text-sm focus:ring-2 focus:ring-primary/20" placeholder="搜索洞察..." type="text" />
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-lg text-on-surface-variant">search</span>
           </div>
           <div className="flex items-center gap-3">
