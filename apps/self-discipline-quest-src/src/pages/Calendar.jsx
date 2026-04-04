@@ -88,7 +88,7 @@ export function Calendar() {
       {/* Top Header */}
       <header className="sticky top-0 right-0 z-30 ml-64 flex items-center justify-between border-b border-gray-100 bg-white/70 px-10 py-5 backdrop-blur-xl">
         <div className="flex items-center gap-4">
-          <h2 className="text-xl font-bold text-gray-900">学者日程</h2>
+          <h2 className="text-xl font-bold text-gray-900">日程规划</h2>
         </div>
         <div className="flex items-center gap-6">
           <div className="relative flex w-64 items-center rounded-xl border border-gray-100 bg-gray-50 px-4 py-2 transition-all focus-within:border-primary/50">
@@ -104,7 +104,7 @@ export function Calendar() {
               <span className="material-symbols-outlined">notifications</span>
               {noticeCount > 0 && <span className="absolute right-0 top-0 h-2 w-2 rounded-full border-2 border-white bg-red-500" />}
             </button>
-            <img className="h-9 w-9 rounded-full border-2 border-white object-cover shadow-sm" alt="user avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkZi7qTk4y3vJq4sslJNS8XwJaViy1HEnkH8hb5zDSmXz4uW0f0fE_rNYQXPuI9XfozD1SbzdpcjiWiO6cVFiWh1rRooJrZYjBgPB4Ryljw7fjxJwXlgl9N4L71EVQtvflvRQw4nEIu1GsJEWTxnEzhH0wvWVZLz9-1Q-aI3YwN9LTlMt9qSExRht42nSxrkO5o2XahnXE3F3DHPgMDvK5ua_i8Z8cVIhytfbNA7OSKHXshP2Pnv4NsiWKshcAfCJMwOYwF-nq92I" />
+            <img className="h-9 w-9 rounded-full border-2 border-white bg-black object-cover shadow-sm" alt="user avatar" src="about:blank" />
           </div>
         </div>
       </header>
@@ -115,11 +115,11 @@ export function Calendar() {
           <header className="mb-10 flex items-end justify-between">
             <div>
               <div className="mb-1 flex items-center gap-2">
-                <span className="text-xs font-bold uppercase tracking-widest text-primary">效率中枢</span>
-                <span className="h-1 w-1 rounded-full bg-outline-variant" />
-                <span className="text-xs font-medium text-gray-500">2024 年 10 月</span>
-              </div>
-              <h1 className="text-4xl font-extrabold tracking-tight text-gray-900">学者计划日历</h1>
+                  <span className="text-xs font-bold uppercase tracking-widest text-primary">学习规划</span>
+                  <span className="h-1 w-1 rounded-full bg-outline-variant" />
+                  <span className="text-xs font-medium text-gray-500">2024 年 10 月</span>
+                </div>
+                <h1 className="text-4xl font-extrabold tracking-tight text-gray-900">日历计划表</h1>
             </div>
             <button
               onClick={() => setModalOpen(true)}

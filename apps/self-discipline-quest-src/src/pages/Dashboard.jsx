@@ -131,7 +131,7 @@ export function Dashboard() {
               <span className="material-symbols-outlined">notifications</span>
               <span className="absolute right-0 top-0 h-2 w-2 rounded-full border-2 border-white bg-red-500" />
             </button>
-            <img className="h-9 w-9 rounded-full border-2 border-white object-cover shadow-sm" alt="user avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkZi7qTk4y3vJq4sslJNS8XwJaViy1HEnkH8hb5zDSmXz4uW0f0fE_rNYQXPuI9XfozD1SbzdpcjiWiO6cVFiWh1rRooJrZYjBgPB4Ryljw7fjxJwXlgl9N4L71EVQtvflvRQw4nEIu1GsJEWTxnEzhH0wvWVZLz9-1Q-aI3YwN9LTlMt9qSExRht42nSxrkO5o2XahnXE3F3DHPgMDvK5ua_i8Z8cVIhytfbNA7OSKHXshP2Pnv4NsiWKshcAfCJMwOYwF-nq92I" />
+            <img className="h-9 w-9 rounded-full border-2 border-white bg-black object-cover shadow-sm" alt="user avatar" src="about:blank" />
           </div>
         </div>
       </header>
@@ -294,7 +294,7 @@ export function Dashboard() {
             <div className="relative">
               <div className="mb-8 flex items-center gap-6">
                 <div className="relative">
-                  <img className="h-20 w-20 rounded-2xl object-cover ring-4 ring-yellow-50" alt="用户头像" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0g116qXD8RmAHwcD3U1b7DBfUwV8kn5gCDmZL5y_URBFrjMR-eCN3mElXZTCy1pJGw8ZP6zuNasVTIvM-qWVhJ8wNc7sWZtH-_kA1nl0j61U-7z3u7TYVGQFfy6xDIOslG06_bLpbF8VURLCyJSxmnoMWMBBCDqXuU4OglX5MBnzWRBvSz2_FVU6pHlYImQeiNxFc8_9jVGlltris9w5rGcfzjA7yTESKYUqluCxAVzr5kC_Vc6uGvqbekFnWGYhuBD2KBH_UdeE" />
+                  <div className="h-20 w-20 rounded-2xl bg-black ring-4 ring-yellow-50" />
                   <div className="absolute -bottom-2 -right-2 rounded-lg border border-gray-50 bg-white p-1 shadow-md">
                     <div className="rounded bg-primary px-2 py-0.5 text-[10px] font-black uppercase text-on-primary">14 级</div>
                   </div>

@@ -115,8 +115,8 @@ export function Progress() {
               {/* Consistency Grid */}
               <div className="rounded-xl bg-white p-5 shadow-sm">
                 <div className="mb-4 flex items-center justify-between">
-                  <h4 className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Consistency Grid</h4>
-                  <span className="text-[10px] font-bold text-primary">Past 30 Days</span>
+                  <h4 className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">一致性网格</h4>
+                  <span className="text-[10px] font-bold text-primary">过去 30 天</span>
                 </div>
                 <div className="grid grid-cols-7 gap-2">
                   {consistencyDots.map((type, i) => (
@@ -134,7 +134,7 @@ export function Progress() {
           <div className="grid grid-cols-12 gap-6">
             {/* Skill Progress Bars */}
             <div className="col-span-12 rounded-xl bg-surface-container-low p-6 md:col-span-4">
-              <h3 className="mb-6 text-sm font-bold uppercase tracking-widest text-on-surface-variant">Core Competencies</h3>
+              <h3 className="mb-6 text-sm font-bold uppercase tracking-widest text-on-surface-variant">核心能力</h3>
               <div className="space-y-8">
                 {skills.map((s, i) => (
                   <div key={i}>
@@ -143,14 +143,14 @@ export function Progress() {
                         <h4 className="text-sm font-bold" style={{ letterSpacing: '-0.02em' }}>{s.name}</h4>
                         <span className="text-[10px] font-medium text-on-surface-variant">{s.sub}</span>
                       </div>
-                      <span className="text-xs font-black text-primary">LVL {String(s.level).padStart(2, '0')}</span>
+                      <span className="text-xs font-black text-primary">第 {String(s.level).padStart(2, '0')} 级</span>
                     </div>
                     <div className="h-2 w-full overflow-hidden rounded-full bg-surface-container-highest">
                       <div className="progress-gradient h-full shadow-[0_0_8px_rgba(106,91,0,0.2)]" style={{ width: `${s.pct}%` }} />
                     </div>
                     <div className="mt-1 text-right">
                       <span className="text-[9px] font-bold uppercase text-on-surface-variant">
-                        {s.pct}% to level {String(s.level + 1).padStart(2, '0')}
+                        {s.pct}% 到第 {String(s.level + 1).padStart(2, '0')} 级
                       </span>
                     </div>
                   </div>
@@ -160,7 +160,7 @@ export function Progress() {
 
             {/* Execution Trend */}
             <div className="col-span-12 rounded-xl bg-white p-6 shadow-sm md:col-span-5">
-              <h3 className="mb-6 text-sm font-bold uppercase tracking-widest text-on-surface-variant">Execution Trend</h3>
+              <h3 className="mb-6 text-sm font-bold uppercase tracking-widest text-on-surface-variant">执行趋势</h3>
               <div className="flex h-48 items-end gap-3 px-4">
                 {executionDays.map((d, i) => (
                   <div key={i} className="flex flex-1 flex-col items-center">
@@ -175,25 +175,25 @@ export function Progress() {
               <div className="mt-6 flex justify-around text-center">
                 <div>
                   <span className="block text-lg font-black" style={{ letterSpacing: '-0.02em' }}>128</span>
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant">Completed</span>
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant">已完成</span>
                 </div>
                 <div className="h-8 w-px bg-surface-container-highest" />
                 <div>
                   <span className="block text-lg font-black" style={{ letterSpacing: '-0.02em' }}>14</span>
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant">Avg / Day</span>
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant">日均</span>
                 </div>
               </div>
             </div>
 
             {/* Focus Hours Donut */}
             <div className="col-span-12 flex flex-col rounded-xl bg-white p-6 shadow-sm md:col-span-3">
-              <h3 className="mb-4 text-sm font-bold uppercase tracking-widest text-on-surface-variant">Focus Hours</h3>
+              <h3 className="mb-4 text-sm font-bold uppercase tracking-widest text-on-surface-variant">专注时长</h3>
               <div className="relative flex flex-1 items-center justify-center">
                 <div className="relative flex h-32 w-32 items-center justify-center rounded-full border-[12px] border-surface-container-highest">
                   <div className="absolute inset-0 mx-auto h-32 w-32 rotate-45 rounded-full border-[12px] border-primary border-l-transparent border-t-transparent" />
                   <div className="text-center">
                     <span className="text-xl font-black" style={{ letterSpacing: '-0.02em' }}>4.2</span>
-                    <span className="block text-[8px] font-bold text-on-surface-variant">HRS / DAY</span>
+                    <span className="block text-[8px] font-bold text-on-surface-variant">小时/天</span>
                   </div>
                 </div>
               </div>
@@ -201,14 +201,14 @@ export function Progress() {
                 <div className="flex items-center justify-between text-[10px]">
                   <div className="flex items-center gap-2">
                     <div className="h-2 w-2 rounded-full bg-primary" />
-                    <span className="font-medium">Deep Work</span>
+                    <span className="font-medium">深度工作</span>
                   </div>
                   <span className="font-bold">65%</span>
                 </div>
                 <div className="flex items-center justify-between text-[10px]">
                   <div className="flex items-center gap-2">
                     <div className="h-2 w-2 rounded-full bg-surface-container-highest" />
-                    <span className="font-medium">Review</span>
+                    <span className="font-medium">复习</span>
                   </div>
                   <span className="font-bold">35%</span>
                 </div>
@@ -219,9 +219,9 @@ export function Progress() {
           {/* Unlock Timeline */}
           <div className="rounded-xl bg-white p-8 shadow-sm">
             <div className="mb-10 flex items-center justify-between">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-on-surface-variant">Unlock Timeline</h3>
+              <h3 className="text-sm font-bold uppercase tracking-widest text-on-surface-variant">解锁时间线</h3>
               <button className="group flex items-center gap-1 text-xs font-bold text-primary">
-                View All Achievements
+                查看所有成就
                 <span className="material-symbols-outlined text-sm transition-transform group-hover:translate-x-1">chevron_right</span>
               </button>
             </div>
@@ -236,7 +236,7 @@ export function Progress() {
                     {m.current ? (
                       <div className="relative -mt-2 flex h-14 w-14 items-center justify-center rounded-full border-4 border-white bg-primary-container text-primary shadow-xl ring-4 ring-primary/20">
                         <span className="material-symbols-outlined filled-icon text-2xl">{m.icon}</span>
-                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-on-surface px-2 py-1 text-[8px] font-bold text-surface">YOU ARE HERE</div>
+                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-on-surface px-2 py-1 text-[8px] font-bold text-surface">你在这里</div>
                       </div>
                     ) : m.done ? (
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-on-primary shadow-lg">
@@ -249,7 +249,7 @@ export function Progress() {
                     )}
                     <div className="mt-4 text-center">
                       <span className={`block text-[10px] font-black ${m.current ? 'text-primary' : m.locked ? 'opacity-40' : ''}`} style={{ letterSpacing: '-0.02em' }}>
-                        Level {m.level}
+                        第 {m.level} 级
                       </span>
                       <span className={`text-[9px] font-medium text-on-surface-variant ${m.locked ? 'opacity-60' : ''}`}>{m.label}</span>
                     </div>
@@ -266,9 +266,9 @@ export function Progress() {
                 <span className="material-symbols-outlined">lightbulb</span>
               </div>
               <div>
-                <h4 className="mb-1 font-bold" style={{ letterSpacing: '-0.02em' }}>Optimal Focus Identified</h4>
+                <h4 className="mb-1 font-bold" style={{ letterSpacing: '-0.02em' }}>最优专注时段已识别</h4>
                 <p className="text-sm leading-relaxed opacity-80">
-                  Your data shows you are most productive between <span className="font-black">8:30 AM and 10:45 AM</span>. We recommend scheduling "Mathematics" during this window to accelerate Level 09 unlocking.
+                  你的数据显示你在 <span className="font-black">8:30 AM 至 10:45 AM</span> 时期生产力最高。我们建议在此时段安排"数学"以加速第 09 级解锁。
                 </p>
               </div>
             </div>
@@ -277,9 +277,9 @@ export function Progress() {
                 <span className="material-symbols-outlined">trending_up</span>
               </div>
               <div>
-                <h4 className="mb-1 font-bold" style={{ letterSpacing: '-0.02em' }}>Momentum Rising</h4>
+                <h4 className="mb-1 font-bold" style={{ letterSpacing: '-0.02em' }}>动力持续上升</h4>
                 <p className="text-sm leading-relaxed opacity-80">
-                  You've completed <span className="font-black">12% more tasks</span> this week compared to last. Keep the streak going to unlock the Deep Focus Badge at Level 15.
+                  本周你完成的任务比上周增加了 <span className="font-black">12%</span>。保持连胜以在第 15 级解锁深度专注徽章。
                 </p>
               </div>
             </div>

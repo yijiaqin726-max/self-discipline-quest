@@ -27,11 +27,7 @@ export function Sidebar({ active = 'dashboard', onChange }) {
       <div className="mb-8 px-4">
         <h1 className="text-lg font-black tracking-tight text-zinc-900">游戏化人生</h1>
         <div className="mt-2 flex items-center gap-2">
-          <img
-            className="h-8 w-8 rounded-full border-2 border-primary-container object-cover"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkZi7qTk4y3vJq4sslJNS8XwJaViy1HEnkH8hb5zDSmXz4uW0f0fE_rNYQXPuI9XfozD1SbzdpcjiWiO6cVFiWh1rRooJrZYjBgPB4Ryljw7fjxJwXlgl9N4L71EVQtvflvRQw4nEIu1GsJEWTxnEzhH0wvWVZLz9-1Q-aI3YwN9LTlMt9qSExRht42nSxrkO5o2XahnXE3F3DHPgMDvK5ua_i8Z8cVIhytfbNA7OSKHXshP2Pnv4NsiWKshcAfCJMwOYwF-nq92I"
-            alt="用户头像"
-          />
+          <div className="h-8 w-8 rounded-full bg-black ring-2 ring-primary-container" />
           <div>
             <p className="text-xs font-bold text-on-surface">等级 14 · 专注中</p>
             <p className="text-[10px] font-medium text-on-surface-variant">秦逸嘉</p>
