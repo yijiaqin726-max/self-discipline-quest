@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Sidebar } from '../components/Sidebar';
+import { TaskModal } from '../components/Modal';
 
 const DAYS_HEADER = ['日', '一', '二', '三', '四', '五', '六'];
 
@@ -15,6 +16,12 @@ const calendarDays = [
 ];
 
 export function Calendar() {
+  const monthOptions = ['2024 年 10 月', '2024 年 11 月', '2024 年 12 月'];
+  const [monthIndex, setMonthIndex] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [sessionRunning, setSessionRunning] = useState(false);
+  const [focusMode, setFocusMode] = useState('免打扰');
+  const [noticeCount, setNoticeCount] = useState(1);
   const [dailyTasks, setDailyTasks] = useState([
     {
       id: 1,
@@ -44,9 +51,39 @@ export function Calendar() {
     setDailyTasks((prev) => prev.filter((task) => task.id !== id));
   };
 
+  const prevMonth = () => {
+    setMonthIndex((prev) => (prev - 1 + monthOptions.length) % monthOptions.length);
+  };
+
+  const nextMonth = () => {
+    setMonthIndex((prev) => (prev + 1) % monthOptions.length);
+  };
+
+  const handleCreateTask = () => {
+    setDailyTasks((prev) => [
+      ...prev,
+      {
+        id: Date.now(),
+        time: '19:30 — 20:00',
+        title: '新建任务（可编辑）',
+        subtitle: '快速添加',
+        xp: 80,
+        done: false,
+        kind: 'task',
+      },
+    ]);
+    setModalOpen(false);
+  };
+
+  const handleSidebarChange = (key) => {
+    if (key === 'add-task') {
+      setModalOpen(true);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-surface text-on-surface">
-      <Sidebar />
+      <Sidebar active="calendar" onChange={handleSidebarChange} />
 
       {/* Top Header */}
       <header className="sticky top-0 right-0 z-30 ml-64 flex items-center justify-between border-b border-gray-100 bg-white/70 px-10 py-5 backdrop-blur-xl">
@@ -59,9 +96,13 @@ export function Calendar() {
             <input className="ml-2 w-full border-none bg-transparent text-sm placeholder:text-gray-400 focus:ring-0" placeholder="搜索任务..." type="text" />
           </div>
           <div className="flex items-center gap-4 border-l border-gray-100 pl-6">
-            <button className="relative text-gray-500 hover:text-gray-900">
+            <button
+              onClick={() => setNoticeCount(0)}
+              className="relative text-gray-500 hover:text-gray-900"
+              title="清空提醒"
+            >
               <span className="material-symbols-outlined">notifications</span>
-              <span className="absolute right-0 top-0 h-2 w-2 rounded-full border-2 border-white bg-red-500" />
+              {noticeCount > 0 && <span className="absolute right-0 top-0 h-2 w-2 rounded-full border-2 border-white bg-red-500" />}
             </button>
             <img className="h-9 w-9 rounded-full border-2 border-white object-cover shadow-sm" alt="user avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkZi7qTk4y3vJq4sslJNS8XwJaViy1HEnkH8hb5zDSmXz4uW0f0fE_rNYQXPuI9XfozD1SbzdpcjiWiO6cVFiWh1rRooJrZYjBgPB4Ryljw7fjxJwXlgl9N4L71EVQtvflvRQw4nEIu1GsJEWTxnEzhH0wvWVZLz9-1Q-aI3YwN9LTlMt9qSExRht42nSxrkO5o2XahnXE3F3DHPgMDvK5ua_i8Z8cVIhytfbNA7OSKHXshP2Pnv4NsiWKshcAfCJMwOYwF-nq92I" />
           </div>
@@ -80,7 +121,10 @@ export function Calendar() {
               </div>
               <h1 className="text-4xl font-extrabold tracking-tight text-gray-900">学者计划日历</h1>
             </div>
-            <button className="flex items-center gap-2 rounded-full bg-primary-container px-6 py-3 font-bold text-on-primary-container shadow-lg shadow-yellow-500/10 transition-all hover:scale-105 active:scale-95">
+            <button
+              onClick={() => setModalOpen(true)}
+              className="flex items-center gap-2 rounded-full bg-primary-container px-6 py-3 font-bold text-on-primary-container shadow-lg shadow-yellow-500/10 transition-all hover:scale-105 active:scale-95"
+            >
               <span className="material-symbols-outlined">add</span>
               <span>快速添加任务</span>
             </button>
@@ -91,12 +135,12 @@ export function Calendar() {
             <section className="col-span-12 space-y-6 lg:col-span-7">
               <div className="rounded-3xl bg-white p-8 shadow-sm">
                 <div className="mb-8 flex items-center justify-between">
-                  <h2 className="text-xl font-bold text-gray-900">2024 年 10 月</h2>
+                  <h2 className="text-xl font-bold text-gray-900">{monthOptions[monthIndex]}</h2>
                   <div className="flex gap-2">
-                    <button className="rounded-lg p-2 transition-colors hover:bg-gray-100">
+                    <button onClick={prevMonth} className="rounded-lg p-2 transition-colors hover:bg-gray-100" title="上个月">
                       <span className="material-symbols-outlined">chevron_left</span>
                     </button>
-                    <button className="rounded-lg p-2 transition-colors hover:bg-gray-100">
+                    <button onClick={nextMonth} className="rounded-lg p-2 transition-colors hover:bg-gray-100" title="下个月">
                       <span className="material-symbols-outlined">chevron_right</span>
                     </button>
                   </div>
@@ -181,13 +225,22 @@ export function Calendar() {
                     <div className="rounded-2xl border border-gray-100 bg-gray-50 p-4">
                       <div className="mb-3 flex items-center gap-2 text-xs text-gray-500">
                         <span className="material-symbols-outlined text-sm">psychology</span>
-                        <span>专注模式：已开启</span>
+                        <span>{`专注模式：${sessionRunning ? '进行中' : '待开始'}`}</span>
                         <span className="mx-1">•</span>
-                        <span>免打扰</span>
+                        <span>{focusMode}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <button className="flex-1 rounded-xl bg-gray-900 py-2 text-xs font-bold text-white transition-colors hover:bg-black">开始专注</button>
-                        <button className="rounded-xl border border-gray-200 p-2 transition-colors hover:bg-white">
+                        <button
+                          onClick={() => setSessionRunning((v) => !v)}
+                          className="flex-1 rounded-xl bg-gray-900 py-2 text-xs font-bold text-white transition-colors hover:bg-black"
+                        >
+                          {sessionRunning ? '暂停专注' : '开始专注'}
+                        </button>
+                        <button
+                          onClick={() => setFocusMode((v) => (v === '免打扰' ? '标准提醒' : '免打扰'))}
+                          className="rounded-xl border border-gray-200 p-2 transition-colors hover:bg-white"
+                          title="切换专注模式"
+                        >
                           <span className="material-symbols-outlined text-sm">more_horiz</span>
                         </button>
                       </div>
@@ -294,6 +347,8 @@ export function Calendar() {
           </div>
         </div>
       </main>
+
+      <TaskModal open={modalOpen} onClose={() => setModalOpen(false)} onCreate={handleCreateTask} />
     </div>
   );
 }
