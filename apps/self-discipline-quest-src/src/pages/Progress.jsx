@@ -57,7 +57,7 @@ export function Progress() {
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-lg text-on-surface-variant">search</span>
           </div>
           <div className="flex items-center gap-3">
-            <button className="rounded-full bg-surface-container-high px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-on-surface transition-all hover:bg-surface-container-highest">Pomodoro</button>
+            <button className="rounded-full bg-surface-container-high px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-on-surface transition-all hover:bg-surface-container-highest">番茄钟</button>
             <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-primary">
               <span className="text-[10px] font-black text-primary">14</span>
             </div>
@@ -73,12 +73,12 @@ export function Progress() {
             <div className="col-span-12 rounded-xl bg-white p-6 shadow-[0_20px_40px_rgba(106,91,0,0.04)] lg:col-span-8">
               <div className="mb-8 flex items-end justify-between">
                 <div>
-                  <span className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Velocity Tracking</span>
-                  <h3 className="text-2xl font-extrabold leading-none" style={{ letterSpacing: '-0.02em' }}>Weekly XP Growth</h3>
+                  <span className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">速度追踪</span>
+                  <h3 className="text-2xl font-extrabold leading-none" style={{ letterSpacing: '-0.02em' }}>周经验增长</h3>
                 </div>
                 <div className="text-right">
                   <span className="text-3xl font-black text-primary" style={{ letterSpacing: '-0.02em' }}>4,820</span>
-                  <span className="block text-[10px] font-bold uppercase tracking-widest text-tertiary">+12% vs Last Week</span>
+                  <span className="block text-[10px] font-bold uppercase tracking-widest text-tertiary">+12% 相较上周</span>
                 </div>
               </div>
               {/* Chart */}
@@ -100,11 +100,11 @@ export function Progress() {
               {/* Current Streak Card */}
               <div className="relative overflow-hidden rounded-xl bg-primary p-6 text-on-primary">
                 <div className="relative z-10">
-                  <span className="mb-1 block text-[10px] font-bold uppercase tracking-widest opacity-80">Active Momentum</span>
-                  <h3 className="text-3xl font-black" style={{ letterSpacing: '-0.02em' }}>24 Day Streak</h3>
+                  <span className="mb-1 block text-[10px] font-bold uppercase tracking-widest opacity-80">活跃动力</span>
+                  <h3 className="text-3xl font-black" style={{ letterSpacing: '-0.02em' }}>24 天连胜</h3>
                   <div className="mt-4 flex items-center gap-2">
                     <span className="material-symbols-outlined filled-icon text-yellow-200">local_fire_department</span>
-                    <span className="text-xs font-bold">Personal Record: 42 days</span>
+                    <span className="text-xs font-bold">个人记录：42 天</span>
                   </div>
                 </div>
                 <div className="absolute -bottom-4 -right-4 opacity-10">
