@@ -258,7 +258,7 @@ export function Dashboard() {
                   </div>
                 </div>
                 <div>
-                  <h5 className="text-xl font-bold text-gray-900">{profile?.name || '秦逸嘉'}</h5>
+                  <h5 className="text-xl font-bold text-gray-900">{profile?.name || '秦艺家'}</h5>
                   <p className="text-sm font-medium text-gray-500">{profile?.status || '游戏化人生践行者'}</p>
                 </div>
               </div>

@@ -30,7 +30,7 @@ export function Sidebar({ active = 'dashboard', onChange }) {
           <div className="h-8 w-8 rounded-full bg-black ring-2 ring-primary-container" />
           <div>
             <p className="text-xs font-bold text-on-surface">等级 14 · 专注中</p>
-            <p className="text-[10px] font-medium text-on-surface-variant">秦逸嘉</p>
+            <p className="text-[10px] font-medium text-on-surface-variant">秦艺家</p>
           </div>
         </div>
       </div>

@@ -58,7 +58,7 @@ const defaultState = {
     streak: 24,
   },
   userProfile: {
-    name: '秦逸嘉',
+    name: '秦艺家',
     level: 14,
     totalXp: 4250,
     status: '游戏化人生践行者',
